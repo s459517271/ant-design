@@ -11,6 +11,7 @@ import { clsx } from 'clsx';
 
 import { pickClosable, useClosable, useMergeSemantic } from '../_util/hooks';
 import type { SemanticClassNamesType, SemanticStylesType } from '../_util/hooks';
+import { isPlainObject } from '../_util/is';
 import { devUseWarning } from '../_util/warning';
 import { ConfigContext } from '../config-provider';
 import { useComponentConfig } from '../config-provider/context';
@@ -97,13 +98,11 @@ export const PureContent: React.FC<PureContentProps> = (props) => {
   return (
     <div className={clsx({ [`${prefixCls}-with-icon`]: iconNode })} role={role}>
       {iconNode}
-      {
-        title && (
-          <div className={clsx(`${prefixCls}-title`, pureContentCls.title)} style={styles.title}>
-            {title}
-          </div>
-        )
-      }
+      {title && (
+        <div className={clsx(`${prefixCls}-title`, pureContentCls.title)} style={styles.title}>
+          {title}
+        </div>
+      )}
       {description && (
         <div
           className={clsx(`${prefixCls}-description`, pureContentCls.description)}
@@ -125,7 +124,8 @@ export const PureContent: React.FC<PureContentProps> = (props) => {
 };
 
 export interface PurePanelProps
-  extends Omit<NoticeProps, 'prefixCls' | 'eventKey' | 'classNames' | 'styles'>,
+  extends
+    Omit<NoticeProps, 'prefixCls' | 'eventKey' | 'classNames' | 'styles'>,
     Omit<PureContentProps, 'prefixCls' | 'children' | 'classNames' | 'styles'> {
   prefixCls?: string;
   classNames?: PurePanelClassNamesType;
@@ -199,7 +199,7 @@ const PurePanel: React.FC<PurePanelProps> = (props) => {
 
   const mergedClosable = rawClosable
     ? {
-        onClose: closable && typeof closable === 'object' ? closable?.onClose : undefined,
+        onClose: isPlainObject(closable) ? closable?.onClose : undefined,
         closeIcon: mergedCloseIcon,
         ...ariaProps,
       }
