@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { useControlledState } from '@rc-component/util';
-import useId from '@rc-component/util/lib/hooks/useId';
-import pickAttrs from '@rc-component/util/lib/pickAttrs';
+import { pickAttrs, useControlledState, useId } from '@rc-component/util';
 import { clsx } from 'clsx';
 
 import { useOrientation } from '../_util/hooks';
@@ -59,9 +57,7 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>((props, ref
     (event: RadioChangeEvent) => {
       const lastValue = value;
       const val = event.target.value;
-      if (!('value' in props)) {
-        setValue(val);
-      }
+      setValue(val);
       if (val !== lastValue) {
         onChange?.(event);
       }
@@ -107,6 +103,7 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>((props, ref
           className={option.className} // 👈 5.25.0+
           id={option.id}
           required={option.required}
+          onChange={option.onChange}
         >
           {option.label}
         </Radio>

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import type { BaseSelectRef } from '@rc-component/select';
-import type { Placement } from '@rc-component/select/lib/BaseSelect';
 import type { TreeSelectProps as RcTreeSelectProps } from '@rc-component/tree-select';
 import RcTreeSelect, {
   SHOW_ALL,
@@ -8,12 +7,12 @@ import RcTreeSelect, {
   SHOW_PARENT,
   TreeNode,
 } from '@rc-component/tree-select';
-import type { DataNode } from '@rc-component/tree-select/lib/interface';
 import { omit } from '@rc-component/util';
 import { clsx } from 'clsx';
 
-import { useMergeSemantic, useZIndex } from '../_util/hooks';
-import type { SemanticClassNamesType, SemanticStylesType } from '../_util/hooks';
+import { useZIndex } from '../_util/hooks';
+import { useMergeSemantic } from '../_util/hooks/useMergeSemantic';
+import type { GenerateSemantic } from '../_util/hooks/useMergeSemantic/semanticType';
 import type { SelectCommonPlacement } from '../_util/motion';
 import { getTransitionName } from '../_util/motion';
 import genPurePanel from '../_util/PurePanel';
@@ -42,6 +41,8 @@ import type { SwitcherIcon } from '../tree/Tree';
 import SwitcherIconCom from '../tree/utils/iconUtil';
 import useStyle from './style';
 
+type DataNode = NonNullable<RcTreeSelectProps['treeData']>[number];
+
 type RawValue = string | number;
 
 export interface LabeledValue {
@@ -52,58 +53,49 @@ export interface LabeledValue {
 
 export type SelectValue = RawValue | RawValue[] | LabeledValue | LabeledValue[];
 
-export type TreeSelectSemanticName = keyof TreeSelectSemanticClassNames &
-  keyof TreeSelectSemanticStyles;
-
-export type TreeSelectSemanticClassNames = {
-  root?: string;
-  prefix?: string;
-  input?: string;
-  suffix?: string;
-  content?: string;
-  placeholder?: string;
-  item?: string;
-  itemContent?: string;
-  itemRemove?: string;
+export type TreeSelectPopupSemanticType = {
+  classNames?: {
+    root?: string;
+    item?: string;
+    itemTitle?: string;
+    itemSwitcher?: string;
+  };
+  styles?: {
+    root?: React.CSSProperties;
+    item?: React.CSSProperties;
+    itemTitle?: React.CSSProperties;
+    itemSwitcher?: React.CSSProperties;
+  };
 };
 
-export type TreeSelectSemanticStyles = {
-  root?: React.CSSProperties;
-  prefix?: React.CSSProperties;
-  input?: React.CSSProperties;
-  suffix?: React.CSSProperties;
-  content?: React.CSSProperties;
-  placeholder?: React.CSSProperties;
-  item?: React.CSSProperties;
-  itemContent?: React.CSSProperties;
-  itemRemove?: React.CSSProperties;
+export type TreeSelectSemanticType = {
+  classNames?: {
+    root?: string;
+    prefix?: string;
+    input?: string;
+    suffix?: string;
+    content?: string;
+    placeholder?: string;
+    item?: string;
+    itemContent?: string;
+    itemRemove?: string;
+    popup?: TreeSelectPopupSemanticType['classNames'];
+  };
+  styles?: {
+    root?: React.CSSProperties;
+    prefix?: React.CSSProperties;
+    input?: React.CSSProperties;
+    suffix?: React.CSSProperties;
+    content?: React.CSSProperties;
+    placeholder?: React.CSSProperties;
+    item?: React.CSSProperties;
+    itemContent?: React.CSSProperties;
+    itemRemove?: React.CSSProperties;
+    popup?: TreeSelectPopupSemanticType['styles'];
+  };
 };
 
-export type TreeSelectPopupSemanticName = keyof TreeSelectPopupSemanticClassNames &
-  keyof TreeSelectPopupSemanticStyles;
-
-export type TreeSelectPopupSemanticClassNames = {
-  root?: string;
-  item?: string;
-  itemTitle?: string;
-};
-
-export type TreeSelectPopupSemanticStyles = {
-  root?: React.CSSProperties;
-  item?: React.CSSProperties;
-  itemTitle?: React.CSSProperties;
-};
-
-export type TreeSelectClassNamesType = SemanticClassNamesType<
-  TreeSelectProps,
-  TreeSelectSemanticClassNames
-> & {
-  popup?: TreeSelectPopupSemanticClassNames;
-};
-
-export type TreeSelectStylesType = SemanticStylesType<TreeSelectProps, TreeSelectSemanticStyles> & {
-  popup?: TreeSelectPopupSemanticStyles;
-};
+export type TreeSelectSemanticAllType = GenerateSemantic<TreeSelectSemanticType, TreeSelectProps>;
 
 interface BaseTreeSelectProps<ValueType = any, OptionType extends DataNode = DataNode>
   extends React.AriaAttributes,
@@ -118,6 +110,7 @@ interface BaseTreeSelectProps<ValueType = any, OptionType extends DataNode = Dat
       | 'switcherIcon'
       | 'classNames'
       | 'styles'
+      | 'popupRender'
     > {
   size?: SizeType;
   disabled?: boolean;
@@ -127,8 +120,8 @@ interface BaseTreeSelectProps<ValueType = any, OptionType extends DataNode = Dat
 
 export interface TreeSelectProps<ValueType = any, OptionType extends DataNode = DataNode>
   extends BaseTreeSelectProps<ValueType, OptionType> {
-  styles?: TreeSelectStylesType;
-  classNames?: TreeSelectClassNamesType;
+  classNames?: TreeSelectSemanticAllType['classNamesAndFn'];
+  styles?: TreeSelectSemanticAllType['stylesAndFn'];
   suffixIcon?: React.ReactNode;
   size?: SizeType;
   disabled?: boolean;
@@ -138,8 +131,8 @@ export interface TreeSelectProps<ValueType = any, OptionType extends DataNode = 
   /** @deprecated Please use `classNames.popup.root` instead */
   dropdownClassName?: string;
   /** @deprecated Please use `popupRender` instead */
-  dropdownRender?: (menu: React.ReactElement) => React.ReactElement;
-  popupRender?: (menu: React.ReactElement) => React.ReactElement;
+  dropdownRender?: (menu: React.ReactElement) => React.ReactNode;
+  popupRender?: (menu: React.ReactElement) => React.ReactNode;
   /** @deprecated Please use `styles.popup.root` instead */
   dropdownStyle?: React.CSSProperties;
   /** @deprecated Please use `onOpenChange` instead */
@@ -302,15 +295,11 @@ const InternalTreeSelect: InternalTreeSelectRef = (props, ref) => {
     variant,
   } as TreeSelectProps;
 
-  const [mergedClassNames, mergedStyles] = useMergeSemantic<
-    TreeSelectClassNamesType,
-    TreeSelectStylesType,
-    TreeSelectProps
-  >(
+  const [mergedClassNames, mergedStyles] = useMergeSemantic(
     [contextClassNames, classNames],
     [contextStyles, styles],
     {
-      props: mergedProps,
+      props: mergedProps as unknown as TreeSelectProps,
     },
     {
       popup: {
@@ -381,7 +370,7 @@ const InternalTreeSelect: InternalTreeSelectRef = (props, ref) => {
   const selectProps = omit(restProps, ['suffixIcon', 'removeIcon', 'clearIcon']);
 
   // ===================== Placement =====================
-  const memoizedPlacement = React.useMemo<Placement>(() => {
+  const memoizedPlacement = React.useMemo<SelectCommonPlacement>(() => {
     if (placement !== undefined) {
       return placement;
     }

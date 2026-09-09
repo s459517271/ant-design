@@ -21,8 +21,8 @@ import SiteContext from '../SiteContext';
 import type { SharedProps } from './interface';
 import Logo from './Logo';
 import Navigation from './Navigation';
-import SwitchBtn from './SwitchBtn';
 import SponsorsNav from './SponsorsNav';
+import SwitchBtn from './SwitchBtn';
 
 const RESPONSIVE_XS = 1120;
 const RESPONSIVE_SM = 1200;
@@ -149,6 +149,9 @@ const useStyle = createStyles(({ cssVar, token, css }) => {
       width: 88px;
       min-width: 88px; // 这个宽度需要和 Empty 状态的宽度保持一致
       margin-inline-end: 6px;
+      input {
+        scroll-margin-top: 0;
+      }
       .rc-virtual-list {
         .rc-virtual-list-holder {
           scrollbar-width: thin;
@@ -238,8 +241,8 @@ const Header: React.FC = () => {
     setHeaderState((prev) => ({ ...prev, windowWidth: window.innerWidth }));
   }, []);
 
-  const onMenuVisibleChange = useCallback((visible: boolean) => {
-    setHeaderState((prev) => ({ ...prev, menuVisible: visible }));
+  const onMenuOpenChange = useCallback((open: boolean) => {
+    setHeaderState((prev) => ({ ...prev, menuVisible: open }));
   }, []);
 
   const onDirectionChange = () => {
@@ -388,7 +391,7 @@ const Header: React.FC = () => {
       key="github"
       href="https://github.com/ant-design/ant-design"
       target="_blank"
-      rel="noreferrer"
+      rel="noopener noreferrer"
     >
       <Tooltip title="GitHub" destroyOnHidden>
         <Button type="text" icon={<GithubOutlined />} style={{ fontSize: 16 }} />
@@ -419,7 +422,7 @@ const Header: React.FC = () => {
           trigger="click"
           open={menuVisible}
           arrow={{ pointAtCenter: true }}
-          onOpenChange={onMenuVisibleChange}
+          onOpenChange={onMenuOpenChange}
         >
           <MenuOutlined className="nav-phone-icon" />
         </Popover>
@@ -443,7 +446,7 @@ const Header: React.FC = () => {
                     className={styles.link}
                     href={bannerHref}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     onClick={() => {
                       window.gtag?.('event', '点击', {
                         event_category: 'top_banner',

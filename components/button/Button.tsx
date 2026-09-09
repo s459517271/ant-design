@@ -1,11 +1,17 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { omit, toArray, useComposeRef } from '@rc-component/util';
-import useLayoutEffect from '@rc-component/util/lib/hooks/useLayoutEffect';
+import {
+  isReactRenderable,
+  omit,
+  toArray,
+  useComposeRef,
+  useDelayState,
+  useLayoutEffect,
+} from '@rc-component/util';
 import { clsx } from 'clsx';
 
-import { useMergeSemantic } from '../_util/hooks';
-import type { SemanticClassNamesType, SemanticStylesType } from '../_util/hooks';
-import { isNonNullable, isNumber } from '../_util/is';
+import { useMergeSemantic, useSemanticRootStyle } from '../_util/hooks/useMergeSemantic';
+import type { GenerateSemantic } from '../_util/hooks/useMergeSemantic/semanticType';
+import { isNumber, isPlainObject } from '../_util/is';
 import { devUseWarning } from '../_util/warning';
 import Wave from '../_util/wave';
 import { useComponentConfig } from '../config-provider/context';
@@ -29,26 +35,20 @@ import Compact from './style/compact';
 
 export type LegacyButtonType = ButtonType | 'danger';
 
-export type ButtonSemanticName = keyof ButtonSemanticClassNames & keyof ButtonSemanticStyles;
-
-export type ButtonSemanticClassNames = {
-  root?: string;
-  icon?: string;
-  content?: string;
+export type ButtonSemanticType = {
+  classNames?: {
+    root?: string;
+    icon?: string;
+    content?: string;
+  };
+  styles?: {
+    root?: React.CSSProperties;
+    icon?: React.CSSProperties;
+    content?: React.CSSProperties;
+  };
 };
 
-export type ButtonSemanticStyles = {
-  root?: React.CSSProperties;
-  icon?: React.CSSProperties;
-  content?: React.CSSProperties;
-};
-
-export type ButtonClassNamesType = SemanticClassNamesType<
-  BaseButtonProps,
-  ButtonSemanticClassNames
->;
-
-export type ButtonStylesType = SemanticStylesType<BaseButtonProps, ButtonSemanticStyles>;
+export type ButtonSemanticAllType = GenerateSemantic<ButtonSemanticType, BaseButtonProps>;
 
 export interface BaseButtonProps {
   type?: ButtonType;
@@ -70,8 +70,8 @@ export interface BaseButtonProps {
   block?: boolean;
   children?: React.ReactNode;
   [key: `data-${string}`]: string;
-  classNames?: ButtonClassNamesType;
-  styles?: ButtonStylesType;
+  classNames?: ButtonSemanticAllType['classNamesAndFn'];
+  styles?: ButtonSemanticAllType['stylesAndFn'];
   // FloatButton reuse the Button as sub component,
   // But this should not consume context semantic classNames and styles.
   // Use props here to avoid context solution cost for normal usage.
@@ -98,7 +98,7 @@ type LoadingConfigType = {
 };
 
 function getLoadingConfig(loading: BaseButtonProps['loading']): LoadingConfigType {
-  if (typeof loading === 'object' && loading) {
+  if (isPlainObject(loading)) {
     let delay = loading?.delay;
     delay = isNumber(delay) ? delay : 0;
     return {
@@ -194,9 +194,17 @@ const InternalCompoundedButton = React.forwardRef<
       return colorVariantPair;
     }
 
+    if (variant === 'solid') {
+      return ['primary', variant];
+    }
+
     // >>> Context fallback
     if (contextColor && contextVariant) {
       return [contextColor, contextVariant];
+    }
+
+    if (contextVariant === 'solid') {
+      return ['primary', contextVariant];
     }
 
     return ['default', 'outlined'];
@@ -225,7 +233,7 @@ const InternalCompoundedButton = React.forwardRef<
 
   const loadingOrDelay = useMemo<LoadingConfigType>(() => getLoadingConfig(loading), [loading]);
 
-  const [innerLoading, setInnerLoading] = useState<boolean>(loadingOrDelay.loading);
+  const [innerLoading, setInnerLoading] = useDelayState<boolean>(loadingOrDelay.loading);
 
   const [hasTwoCNChar, setHasTwoCNChar] = useState<boolean>(false);
 
@@ -251,24 +259,11 @@ const InternalCompoundedButton = React.forwardRef<
   // Loading. Should use `useLayoutEffect` to avoid low perf multiple click issue.
   // https://github.com/ant-design/ant-design/issues/51325
   useLayoutEffect(() => {
-    let delayTimer: ReturnType<typeof setTimeout> | null = null;
     if (loadingOrDelay.delay > 0) {
-      delayTimer = setTimeout(() => {
-        delayTimer = null;
-        setInnerLoading(true);
-      }, loadingOrDelay.delay);
+      setInnerLoading(true, { ms: loadingOrDelay.delay });
     } else {
-      setInnerLoading(loadingOrDelay.loading);
+      setInnerLoading(loadingOrDelay.loading, true);
     }
-
-    function cleanupTimer() {
-      if (delayTimer) {
-        clearTimeout(delayTimer);
-        delayTimer = null;
-      }
-    }
-
-    return cleanupTimer;
   }, [loadingOrDelay.delay, loadingOrDelay.loading]);
 
   // Two chinese characters check
@@ -285,14 +280,14 @@ const InternalCompoundedButton = React.forwardRef<
     } else if (hasTwoCNChar) {
       setHasTwoCNChar(false);
     }
-  });
+  }); // 这里不需要依赖数组
 
   // Auto focus
   useEffect(() => {
-    if (autoFocus && buttonRef.current) {
-      buttonRef.current.focus();
+    if (autoFocus) {
+      buttonRef.current?.focus();
     }
-  }, []);
+  }, []); // 这里不需要依赖 autoFocus 变量，只需要在第一次 mount 时生效
 
   // ========================= Events =========================
   const handleClick = React.useCallback(
@@ -357,13 +352,16 @@ const InternalCompoundedButton = React.forwardRef<
   };
 
   // ========================= Style ==========================
+  const contextStyleRoot = useSemanticRootStyle(contextStyle);
+  const styleRoot = useSemanticRootStyle(style);
+
   const [mergedClassNames, mergedStyles] = useMergeSemantic<
-    ButtonClassNamesType,
-    ButtonStylesType,
-    ButtonProps
+    ButtonSemanticAllType['classNames'],
+    ButtonSemanticAllType['styles'],
+    BaseButtonProps
   >(
     [_skipSemantic ? undefined : contextClassNames, classNames],
-    [_skipSemantic ? undefined : contextStyles, styles],
+    [_skipSemantic ? undefined : contextStyles, contextStyleRoot, styles, styleRoot],
     { props: mergedProps },
   );
 
@@ -398,12 +396,6 @@ const InternalCompoundedButton = React.forwardRef<
     mergedClassNames.root,
   );
 
-  const fullStyle: React.CSSProperties = {
-    ...mergedStyles.root,
-    ...contextStyle,
-    ...style,
-  };
-
   const iconSharedProps = {
     className: mergedClassNames.icon,
     style: mergedStyles.icon,
@@ -429,10 +421,9 @@ const InternalCompoundedButton = React.forwardRef<
     />
   );
 
-  const mergedLoadingIcon =
-    loading && typeof loading === 'object'
-      ? loading.icon || contextLoadingIcon
-      : contextLoadingIcon;
+  const mergedLoadingIcon = isPlainObject(loading)
+    ? loading.icon || contextLoadingIcon
+    : contextLoadingIcon;
 
   /**
    * Using if-else statements can improve code readability without affecting future expansion.
@@ -446,7 +437,7 @@ const InternalCompoundedButton = React.forwardRef<
     iconNode = defaultLoadingIconElement;
   }
 
-  const contentNode = isNonNullable(children)
+  const contentNode = isReactRenderable(children)
     ? spaceChildren(
         children,
         needInserted && mergedInsertSpace,
@@ -461,7 +452,7 @@ const InternalCompoundedButton = React.forwardRef<
         {...linkButtonRestProps}
         className={clsx(classes, { [`${prefixCls}-disabled`]: mergedDisabled })}
         href={mergedDisabled ? undefined : linkButtonRestProps.href}
-        style={fullStyle}
+        style={mergedStyles.root}
         onClick={handleClick}
         ref={mergedRef as React.Ref<HTMLAnchorElement>}
         tabIndex={mergedDisabled ? -1 : 0}
@@ -478,7 +469,7 @@ const InternalCompoundedButton = React.forwardRef<
       {...rest}
       type={htmlType}
       className={classes}
-      style={fullStyle}
+      style={mergedStyles.root}
       onClick={handleClick}
       disabled={mergedDisabled}
       ref={mergedRef as React.Ref<HTMLButtonElement>}

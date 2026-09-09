@@ -3,8 +3,10 @@ import DeleteOutlined from '@ant-design/icons/DeleteOutlined';
 import DownloadOutlined from '@ant-design/icons/DownloadOutlined';
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import CSSMotion from '@rc-component/motion';
+import { useDelayState } from '@rc-component/util';
 import { clsx } from 'clsx';
 
+import { isFunction } from '../../_util/is';
 import { ConfigContext } from '../../config-provider';
 import Progress from '../../progress';
 import Tooltip from '../../tooltip';
@@ -14,16 +16,15 @@ import type {
   UploadListProgressProps,
   UploadListType,
   UploadLocale,
-  UploadSemanticClassNames,
-  UploadSemanticStyles,
+  UploadSemanticAllType,
 } from '../interface';
 
 export interface ListItemProps {
   prefixCls: string;
   className?: string;
   style?: React.CSSProperties;
-  classNames?: UploadSemanticClassNames;
-  styles?: UploadSemanticStyles;
+  classNames?: UploadSemanticAllType['classNames'];
+  styles?: UploadSemanticAllType['styles'];
   locale: UploadLocale;
   file: UploadFile;
   items: UploadFile[];
@@ -91,14 +92,9 @@ const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
     }, [status]);
 
     // Delay to show the progress bar
-    const [showProgress, setShowProgress] = React.useState(false);
+    const [showProgress, setShowProgress] = useDelayState(false);
     React.useEffect(() => {
-      const timer = setTimeout(() => {
-        setShowProgress(true);
-      }, 300);
-      return () => {
-        clearTimeout(timer);
-      };
+      setShowProgress(true, { ms: 300 });
     }, []);
 
     const iconNode = iconRender(file);
@@ -145,13 +141,9 @@ const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
     const linkProps =
       typeof file.linkProps === 'string' ? JSON.parse(file.linkProps) : file.linkProps;
 
-    const removeIcon = (
-      typeof showRemoveIcon === 'function'
-        ? showRemoveIcon(file)
-        : showRemoveIcon
-    )
+    const removeIcon = (isFunction(showRemoveIcon) ? showRemoveIcon(file) : showRemoveIcon)
       ? actionIconRender(
-          (typeof customRemoveIcon === 'function' ? customRemoveIcon(file) : customRemoveIcon) || (
+          (isFunction(customRemoveIcon) ? customRemoveIcon(file) : customRemoveIcon) || (
             <DeleteOutlined />
           ),
           () => onClose(file),
@@ -164,12 +156,12 @@ const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
       : null;
 
     const downloadIcon =
-      (typeof showDownloadIcon === 'function' ? showDownloadIcon(file) : showDownloadIcon) &&
+      (isFunction(showDownloadIcon) ? showDownloadIcon(file) : showDownloadIcon) &&
       mergedStatus === 'done'
         ? actionIconRender(
-            (typeof customDownloadIcon === 'function'
-              ? customDownloadIcon(file)
-              : customDownloadIcon) || <DownloadOutlined />,
+            (isFunction(customDownloadIcon) ? customDownloadIcon(file) : customDownloadIcon) || (
+              <DownloadOutlined />
+            ),
             () => onDownload(file),
             prefixCls,
             locale.downloadFile,
@@ -185,12 +177,18 @@ const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
       </span>
     );
 
-    const extraContent = typeof customExtra === 'function' ? customExtra(file) : customExtra;
+    const extraContent = isFunction(customExtra) ? customExtra(file) : customExtra;
     const extra = extraContent && (
       <span className={`${prefixCls}-list-item-extra`}>{extraContent}</span>
     );
 
     const listItemNameClass = clsx(`${prefixCls}-list-item-name`);
+    const onPreviewKeyDown: React.KeyboardEventHandler<HTMLSpanElement> = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onPreview(file, e);
+      }
+    };
     const fileName = file.url ? (
       <a
         key="view"
@@ -208,8 +206,11 @@ const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
     ) : (
       <span
         key="view"
+        role="button"
+        tabIndex={0}
         className={listItemNameClass}
         onClick={(e) => onPreview(file, e)}
+        onKeyDown={onPreviewKeyDown}
         title={file.name}
       >
         {file.name}
@@ -218,7 +219,7 @@ const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
     );
 
     const previewIcon =
-      (typeof showPreviewIcon === 'function' ? showPreviewIcon(file) : showPreviewIcon) &&
+      (isFunction(showPreviewIcon) ? showPreviewIcon(file) : showPreviewIcon) &&
       (file.url || file.thumbUrl) ? (
         <a
           href={file.url || file.thumbUrl}
@@ -226,8 +227,9 @@ const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
           rel="noopener noreferrer"
           onClick={(e) => onPreview(file, e)}
           title={locale.previewFile}
+          aria-label={locale.previewFile || undefined}
         >
-          {typeof customPreviewIcon === 'function'
+          {isFunction(customPreviewIcon)
             ? customPreviewIcon(file)
             : customPreviewIcon || <EyeOutlined />}
         </a>

@@ -50,16 +50,31 @@ const extname = (url = '') => {
 
 const isImageFileType = (type: string): boolean => type.indexOf('image/') === 0;
 
+const imageExtensions = [
+  '.avif',
+  '.bmp',
+  '.dpg',
+  '.gif',
+  '.heic',
+  '.heif',
+  '.ico',
+  '.jfif',
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.svg',
+  '.tif',
+  '.tiff',
+  '.webp',
+];
+
 export const isImageUrl = (file: UploadFile): boolean => {
   if (file.type && !file.thumbUrl) {
     return isImageFileType(file.type);
   }
   const url = file.thumbUrl || file.url || '';
-  const extension = extname(url);
-  if (
-    /^data:image\//.test(url) ||
-    /(webp|svg|png|gif|jpg|jpeg|jfif|bmp|dpg|ico|heic|heif)$/i.test(extension)
-  ) {
+  const extension = extname(url || file.name);
+  if (/^data:image\//.test(url) || imageExtensions.includes(extension?.toLowerCase() || '')) {
     return true;
   }
   if (/^data:/.test(url)) {
@@ -81,6 +96,18 @@ export function previewImage(file: File | Blob): Promise<string> {
       resolve('');
       return;
     }
+
+    if (file.type.startsWith('image/gif')) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.result) {
+          resolve(reader.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
+
     const canvas = document.createElement('canvas');
     canvas.width = MEASURE_SIZE;
     canvas.height = MEASURE_SIZE;
@@ -116,14 +143,6 @@ export function previewImage(file: File | Blob): Promise<string> {
       reader.onload = () => {
         if (reader.result && typeof reader.result === 'string') {
           img.src = reader.result;
-        }
-      };
-      reader.readAsDataURL(file);
-    } else if (file.type.startsWith('image/gif')) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.result) {
-          resolve(reader.result as string);
         }
       };
       reader.readAsDataURL(file);

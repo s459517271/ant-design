@@ -3,6 +3,11 @@ import React from 'react';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import Tag from '..';
 import { render } from '../../../tests/utils';
+import ConfigProvider from '../../config-provider';
+import {
+  expectSemanticRootStylePriority,
+  semanticRootStylePriority,
+} from '../../../tests/shared/semanticStylePriority';
 
 describe('Tag.Semantic', () => {
   it('support classNames and styles as objects', () => {
@@ -13,6 +18,7 @@ describe('Tag.Semantic', () => {
           root: 'custom-tag-root',
           icon: 'custom-tag-icon',
           content: 'custom-tag-content',
+          close: 'custom-tag-close',
         }}
         styles={{
           root: {
@@ -27,7 +33,11 @@ describe('Tag.Semantic', () => {
             backgroundColor: 'yellow',
             color: 'green',
           },
+          close: {
+            color: 'purple',
+          },
         }}
+        closeIcon
       >
         Test Tag
       </Tag>,
@@ -36,6 +46,7 @@ describe('Tag.Semantic', () => {
     const tagElement = container.querySelector('.ant-tag');
     const iconElement = container.querySelector('.custom-tag-icon');
     const contentElement = container.querySelector('.custom-tag-content');
+    const closeElement = container.querySelector('.custom-tag-close');
 
     expect(tagElement).toHaveClass('custom-tag-root');
     expect(tagElement).toHaveAttribute('style');
@@ -53,6 +64,9 @@ describe('Tag.Semantic', () => {
     const contentStyle = contentElement?.getAttribute('style');
     expect(contentStyle).toContain('background-color: yellow');
     expect(contentStyle).toContain('color: green');
+
+    expect(closeElement).toHaveClass('custom-tag-close');
+    expect(closeElement).toHaveStyle({ color: 'rgb(128, 0, 128)' });
   });
   it('support classNames and styles as functions', () => {
     const { container } = render(
@@ -65,6 +79,7 @@ describe('Tag.Semantic', () => {
           root: info.props.variant === 'filled' ? 'filled-tag' : 'outlined-tag',
           icon: `icon-${info.props.color}`,
           content: `content-${info.props.disabled ? 'disabled' : 'enabled'}`,
+          close: `close-${info.props.variant}`,
         })}
         styles={(info) => ({
           root: {
@@ -79,7 +94,11 @@ describe('Tag.Semantic', () => {
             fontWeight: info.props.disabled ? 'normal' : 'bold',
             color: info.props.color === 'blue' ? 'darkblue' : 'darkgreen',
           },
+          close: {
+            color: info.props.variant === 'filled' ? 'blue' : 'green',
+          },
         })}
+        closeIcon
       >
         Function Tag
       </Tag>,
@@ -88,6 +107,7 @@ describe('Tag.Semantic', () => {
     const tagElement = container.querySelector('.ant-tag');
     const iconElement = container.querySelector('.icon-blue');
     const contentElement = container.querySelector('.content-enabled');
+    const closeElement = container.querySelector('.close-filled');
 
     expect(tagElement).toHaveClass('filled-tag');
     expect(tagElement).toHaveAttribute('style');
@@ -105,6 +125,38 @@ describe('Tag.Semantic', () => {
     const contentStyle = contentElement?.getAttribute('style');
     expect(contentStyle).toContain('font-weight: bold');
     expect(contentStyle).toContain('color: darkblue');
+
+    expect(closeElement).toHaveClass('close-filled');
+    expect(closeElement).toHaveStyle({ color: 'rgb(0, 0, 255)' });
+  });
+  it('should follow root style priority', () => {
+    const { container } = render(
+      <ConfigProvider
+        tag={{
+          styles: semanticRootStylePriority.contextStyles,
+          style: semanticRootStylePriority.contextStyle,
+        }}
+      >
+        <Tag styles={semanticRootStylePriority.styles} style={semanticRootStylePriority.style}>
+          Bamboo
+        </Tag>
+      </ConfigProvider>,
+    );
+
+    expectSemanticRootStylePriority(container.querySelector('.ant-tag'));
+  });
+  it('checkableTag should prioritize local style over context style', () => {
+    const { container } = render(
+      <ConfigProvider tag={{ style: { color: 'rgb(255, 0, 0)' } }}>
+        <Tag.CheckableTag checked style={{ color: 'rgb(0, 0, 255)' }}>
+          Bamboo
+        </Tag.CheckableTag>
+      </ConfigProvider>,
+    );
+
+    expect(container.querySelector('.ant-tag-checkable')).toHaveStyle({
+      color: 'rgb(0, 0, 255)',
+    });
   });
   it('checkableTagGroup support classNames and styles as objects', () => {
     const { container } = render(
@@ -130,6 +182,23 @@ describe('Tag.Semantic', () => {
     expect(container.querySelector('.ant-tag-checkable')).toHaveStyle({
       color: 'rgb(255, 0, 0)',
     });
+  });
+  it('checkableTagGroup should prioritize item styles over context style', () => {
+    const { container } = render(
+      <ConfigProvider tag={{ style: { color: 'rgb(255, 0, 0)' } }}>
+        <Tag.CheckableTagGroup
+          styles={{ item: { color: 'rgb(0, 128, 0)' } }}
+          options={[
+            { label: 'Bamboo', value: 'bamboo' },
+            { label: 'Little', value: 'little', style: { color: 'rgb(0, 0, 255)' } },
+          ]}
+        />
+      </ConfigProvider>,
+    );
+
+    const items = container.querySelectorAll('.ant-tag-checkable');
+    expect(items[0]).toHaveStyle({ color: 'rgb(0, 128, 0)' });
+    expect(items[1]).toHaveStyle({ color: 'rgb(0, 0, 255)' });
   });
   it('checkableTagGroup support classNames and styles as functions', () => {
     const { container } = render(
@@ -171,5 +240,23 @@ describe('Tag.Semantic', () => {
         fontWeight: 'bold',
       });
     });
+  });
+  it('checkableTagGroup should follow root style priority', () => {
+    const { container } = render(
+      <ConfigProvider
+        tag={{
+          styles: semanticRootStylePriority.contextStyles,
+          style: semanticRootStylePriority.contextStyle,
+        }}
+      >
+        <Tag.CheckableTagGroup
+          options={['Bamboo']}
+          styles={semanticRootStylePriority.styles}
+          style={semanticRootStylePriority.style}
+        />
+      </ConfigProvider>,
+    );
+
+    expectSemanticRootStylePriority(container.querySelector('.ant-tag-checkable-group'));
   });
 });

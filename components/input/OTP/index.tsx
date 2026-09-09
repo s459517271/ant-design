@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { useEvent } from '@rc-component/util';
-import pickAttrs from '@rc-component/util/lib/pickAttrs';
+import { pickAttrs, useEvent } from '@rc-component/util';
 import { clsx } from 'clsx';
 
-import { useMergeSemantic } from '../../_util/hooks';
-import type { SemanticClassNamesType, SemanticStylesType } from '../../_util/hooks';
+import { useMergeSemantic, useSemanticRootStyle } from '../../_util/hooks/useMergeSemantic';
+import type { GenerateSemantic } from '../../_util/hooks/useMergeSemantic/semanticType';
+import { isFunction } from '../../_util/is';
 import { getMergedStatus } from '../../_util/statusUtils';
 import type { InputStatus } from '../../_util/statusUtils';
 import { devUseWarning } from '../../_util/warning';
@@ -14,26 +14,26 @@ import useSize from '../../config-provider/hooks/useSize';
 import type { SizeType } from '../../config-provider/SizeContext';
 import { FormItemInputContext } from '../../form/context';
 import type { FormItemStatusContextProps } from '../../form/context';
+import useVariant from '../../form/hooks/useVariants';
 import type { InputRef } from '../Input';
 import useStyle from '../style/otp';
 import OTPInput from './OTPInput';
 import type { OTPInputProps } from './OTPInput';
 
-export type OTPSemanticClassNames = {
-  root?: string;
-  input?: string;
-  separator?: string;
+export type OTPSemanticType = {
+  classNames?: {
+    root?: string;
+    input?: string;
+    separator?: string;
+  };
+  styles?: {
+    root?: React.CSSProperties;
+    input?: React.CSSProperties;
+    separator?: React.CSSProperties;
+  };
 };
 
-export type OTPSemanticStyles = {
-  root?: React.CSSProperties;
-  input?: React.CSSProperties;
-  separator?: React.CSSProperties;
-};
-
-export type OTPClassNamesType = SemanticClassNamesType<OTPProps, OTPSemanticClassNames>;
-
-export type OTPStylesType = SemanticStylesType<OTPProps, OTPSemanticStyles>;
+export type OTPSemanticAllType = GenerateSemantic<OTPSemanticType, OTPProps>;
 
 export interface OTPRef {
   focus: VoidFunction;
@@ -72,8 +72,8 @@ export interface OTPProps
 
   onInput?: (value: string[]) => void;
 
-  classNames?: OTPClassNamesType;
-  styles?: OTPStylesType;
+  classNames?: OTPSemanticAllType['classNamesAndFn'];
+  styles?: OTPSemanticAllType['stylesAndFn'];
 }
 
 function strToArr(str: string) {
@@ -90,7 +90,7 @@ interface SeparatorProps {
 
 const Separator: React.FC<Readonly<SeparatorProps>> = (props) => {
   const { index, prefixCls, separator, className: semanticClassName, style: semanticStyle } = props;
-  const separatorNode = typeof separator === 'function' ? separator(index) : separator;
+  const separatorNode = isFunction(separator) ? separator(index) : separator;
   if (!separatorNode) {
     return null;
   }
@@ -111,7 +111,7 @@ const OTP = React.forwardRef<OTPRef, OTPProps>((props, ref) => {
     onChange,
     formatter,
     separator,
-    variant,
+    variant: customizeVariant,
     disabled,
     status: customStatus,
     autoFocus,
@@ -146,17 +146,22 @@ const OTP = React.forwardRef<OTPRef, OTPProps>((props, ref) => {
     className: contextClassName,
   } = useComponentConfig('otp');
   const prefixCls = getPrefixCls('otp', customizePrefixCls);
+  const [variant] = useVariant('otp', customizeVariant, undefined, 'input');
 
   const mergedProps: OTPProps = {
     ...props,
     length,
+    variant,
   };
 
+  const contextStyleRoot = useSemanticRootStyle(contextStyle);
+  const styleRoot = useSemanticRootStyle(style);
+
   const [mergedClassNames, mergedStyles] = useMergeSemantic<
-    OTPClassNamesType,
-    OTPStylesType,
+    OTPSemanticAllType['classNames'],
+    OTPSemanticAllType['styles'],
     OTPProps
-  >([contextClassNames, classNames], [contextStyles, styles], {
+  >([contextClassNames, classNames], [contextStyles, contextStyleRoot, styles, styleRoot], {
     props: mergedProps,
   });
 
@@ -330,7 +335,7 @@ const OTP = React.forwardRef<OTPRef, OTPProps>((props, ref) => {
         contextClassName,
         mergedClassNames.root,
       )}
-      style={{ ...mergedStyles.root, ...contextStyle, ...style }}
+      style={mergedStyles.root}
       role="group"
     >
       <FormItemInputContext.Provider value={proxyFormContext}>

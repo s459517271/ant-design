@@ -1,8 +1,25 @@
 import React from 'react';
 
-import type { TableProps } from '..';
 import Table from '..';
+import type { GetProp } from '../../_util/type';
 import { render } from '../../../tests/utils';
+import type { InternalTableProps, TableProps } from '../InternalTable';
+import ConfigProvider from '../../config-provider';
+import {
+  expectSemanticRootStylePriority,
+  semanticRootStylePriority,
+} from '../../../tests/shared/semanticStylePriority';
+
+type DeepRequired<T> = T extends object ? { [P in keyof T]-?: DeepRequired<T[P]> } : T;
+type RequiredClassNames = DeepRequired<GetProp<TableProps, 'classNames', 'Return'>>;
+
+type ReplaceStringWithValue<T, NewValue> = T extends object
+  ? { [P in keyof T]: ReplaceStringWithValue<T[P], NewValue> }
+  : T extends string
+    ? NewValue
+    : T;
+
+type RequiredStyles = ReplaceStringWithValue<RequiredClassNames, React.CSSProperties>;
 
 describe('Table', () => {
   it('test classNames and styles', () => {
@@ -59,7 +76,7 @@ describe('Table', () => {
         address: 'Sydney No. 1 Lake Park',
       },
     ];
-    const testClassNames = {
+    const testClassNames: RequiredClassNames = {
       root: 'test-root',
       section: 'test-section',
       title: 'test-title',
@@ -80,7 +97,8 @@ describe('Table', () => {
         item: 'test-pagination-item',
       },
     };
-    const testStyles = {
+
+    const testStyles: RequiredStyles = {
       root: { background: 'gray' },
       section: { background: 'red' },
       title: { background: 'green' },
@@ -216,7 +234,7 @@ describe('Table', () => {
       },
     ];
 
-    const functionClassNames: TableProps['classNames'] = (info) => ({
+    const functionClassNames: GetProp<InternalTableProps<any>, 'classNames'> = (info) => ({
       root: info.props.bordered ? 'test-bordered-root' : 'test-borderless-root',
       header: {
         wrapper: info.props.size === 'small' ? 'test-header-small' : 'test-header-default',
@@ -229,7 +247,7 @@ describe('Table', () => {
       },
     });
 
-    const functionStyles: TableProps['styles'] = (info) => ({
+    const functionStyles: GetProp<InternalTableProps<any>, 'styles'> = (info) => ({
       root: {
         border: info.props.bordered ? '2px solid blue' : '1px solid gray',
       },
@@ -286,5 +304,25 @@ describe('Table', () => {
     expect(pagination).toHaveStyle({
       borderTop: '1px solid #d9d9d9',
     });
+  });
+  it('should follow root style priority', () => {
+    const { container } = render(
+      <ConfigProvider
+        table={{
+          styles: semanticRootStylePriority.contextStyles,
+          style: semanticRootStylePriority.contextStyle,
+        }}
+      >
+        <Table
+          columns={[{ title: 'Name', dataIndex: 'name' }]}
+          dataSource={[{ key: '1', name: 'Bamboo' }]}
+          pagination={false}
+          styles={semanticRootStylePriority.styles}
+          style={semanticRootStylePriority.style}
+        />
+      </ConfigProvider>,
+    );
+
+    expectSemanticRootStylePriority(container.querySelector('.ant-table-wrapper'));
   });
 });

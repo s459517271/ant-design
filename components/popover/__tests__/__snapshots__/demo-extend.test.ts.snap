@@ -14,7 +14,7 @@ Array [
       class="ant-segmented-group"
     >
       <label
-        class="ant-segmented-item ant-segmented-item-selected"
+        class="ant-segmented-item ant-segmented-item-selected ant-segmented-item-selected-text"
       >
         <input
           checked=""
@@ -1124,10 +1124,14 @@ Array [
         class="ant-popover-content"
       >
         <div>
-          <p>
+          <p
+            style="margin: 0px;"
+          >
             Content
           </p>
-          <p>
+          <p
+            style="margin: 0px;"
+          >
             Content
           </p>
         </div>

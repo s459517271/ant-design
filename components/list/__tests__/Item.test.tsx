@@ -11,7 +11,7 @@ describe('List Item Layout', () => {
       key: 1,
       href: 'https://ant.design',
       title: 'ant design',
-      avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=10',
+      avatar: 'https://api.dicebear.com/10.x/lorelei/svg?seed=10',
       description:
         'Ant Design, a design language for background applications, is refined by Ant UED Team.',
       content:
@@ -19,6 +19,13 @@ describe('List Item Layout', () => {
       extra: 'extra',
     },
   ];
+
+  it('should support List.Item.Meta nativeElement ref', () => {
+    const ref = React.createRef<React.ComponentRef<typeof List.Item.Meta>>();
+    const { container } = render(<List.Item.Meta ref={ref} title="Title" />);
+
+    expect(ref.current?.nativeElement).toBe(container.querySelector('.ant-list-item-meta'));
+  });
 
   it('horizontal itemLayout List which contains string nodes should not be flex container', () => {
     const { container } = render(
@@ -223,6 +230,36 @@ describe('List Item Layout', () => {
     rerender(getDom(3));
     rerender(getDom(5));
     expect(loadId).toEqual([1, 3, 5]);
+  });
+
+  it('should preserve an item with numeric zero rowKey when data is reordered', () => {
+    const mountedIds: number[] = [];
+
+    const Demo = ({ id }: { id: number }) => {
+      useEffect(() => {
+        mountedIds.push(id);
+      }, []);
+
+      return <div>{id}</div>;
+    };
+
+    const getDom = (dataSource: Array<{ id: number }>) => (
+      <List
+        dataSource={dataSource}
+        rowKey={(item) => item.id}
+        renderItem={(item) => (
+          <List.Item>
+            <Demo id={item.id} />
+          </List.Item>
+        )}
+      />
+    );
+
+    const { rerender } = pureRender(getDom([{ id: 0 }, { id: 1 }]));
+    expect(mountedIds).toEqual([0, 1]);
+
+    rerender(getDom([{ id: 1 }, { id: 0 }]));
+    expect(mountedIds).toEqual([0, 1]);
   });
 
   it('List.Item.Meta title should have no default margin', () => {

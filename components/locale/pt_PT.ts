@@ -1,4 +1,4 @@
-import Pagination from '@rc-component/pagination/lib/locale/pt_PT';
+import Pagination from '@rc-component/pagination/locale/pt_PT';
 
 import type { Locale } from '.';
 import Calendar from '../calendar/locale/pt_PT';
@@ -16,6 +16,9 @@ const localeValues: Locale = {
   global: {
     placeholder: 'Por favor, selecione',
     close: 'Fechar',
+    show: 'Mostrar',
+    hide: 'Ocultar',
+    sortable: 'classificável',
   },
   Table: {
     filterTitle: 'Filtro',
@@ -82,6 +85,10 @@ const localeValues: Locale = {
     copied: 'Copiado',
     expand: 'Expandir',
     collapse: 'Colapsar',
+  },
+  Carousel: {
+    prevSlide: 'Diapositivo anterior',
+    nextSlide: 'Diapositivo seguinte',
   },
   Form: {
     optional: '(opcional)',

@@ -1,7 +1,8 @@
 import * as React from 'react';
+import { mergeProps } from '@rc-component/util';
 import { clsx } from 'clsx';
 
-import extendsObject from '../_util/extendsObject';
+import { isFunction, isPlainObject } from '../_util/is';
 import { responsiveArray } from '../_util/responsiveObserver';
 import type { Breakpoint } from '../_util/responsiveObserver';
 import { devUseWarning } from '../_util/warning';
@@ -23,6 +24,7 @@ import useStyle from './style';
 export type { ListConsumerProps } from './context';
 export type {
   ListItemMetaProps,
+  ListItemMetaRef,
   ListItemProps,
   ListItemSemanticClassNames,
   ListItemSemanticName,
@@ -101,11 +103,12 @@ const InternalList = <T,>(props: ListProps<T>, ref: React.ForwardedRef<HTMLDivEl
     ...rest
   } = props;
 
-  const paginationObj = pagination && typeof pagination === 'object' ? pagination : {};
+  const paginationObj = isPlainObject(pagination) ? pagination : {};
 
   const [paginationCurrent, setPaginationCurrent] = React.useState(
     paginationObj.defaultCurrent || 1,
   );
+
   const [paginationSize, setPaginationSize] = React.useState(paginationObj.defaultPageSize || 10);
 
   const {
@@ -142,7 +145,7 @@ const InternalList = <T,>(props: ListProps<T>, ref: React.ForwardedRef<HTMLDivEl
 
     let key: any;
 
-    if (typeof rowKey === 'function') {
+    if (isFunction(rowKey)) {
       key = rowKey(item);
     } else if (rowKey) {
       key = item[rowKey];
@@ -150,9 +153,7 @@ const InternalList = <T,>(props: ListProps<T>, ref: React.ForwardedRef<HTMLDivEl
       key = (item as any).key;
     }
 
-    if (!key) {
-      key = `list-item-${index}`;
-    }
+    key ??= `list-item-${index}`;
 
     return <React.Fragment key={key}>{renderItem(item, index)}</React.Fragment>;
   };
@@ -209,7 +210,7 @@ const InternalList = <T,>(props: ListProps<T>, ref: React.ForwardedRef<HTMLDivEl
 
   const containerCls = `${prefixCls}-container`;
 
-  const paginationProps = extendsObject(
+  const paginationProps = mergeProps(
     defaultPaginationProps,
     {
       total: dataSource.length,
@@ -305,7 +306,7 @@ const InternalList = <T,>(props: ListProps<T>, ref: React.ForwardedRef<HTMLDivEl
     warning(
       false,
       'deprecated',
-      'The `List` component is deprecated. And will be removed in next major version.',
+      "The `List` component is deprecated and will be removed in the next major version. If you're using version 6.6.0 or later, please use `Listy` instead.",
     );
   }
 

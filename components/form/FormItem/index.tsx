@@ -1,15 +1,13 @@
 import * as React from 'react';
 import type { JSX } from 'react';
 import { Field, FieldContext, ListContext } from '@rc-component/form';
-import type { FieldProps } from '@rc-component/form/lib/Field';
-import type { InternalNamePath, Meta } from '@rc-component/form/lib/interface';
-import { supportRef } from '@rc-component/util';
-import useState from '@rc-component/util/lib/hooks/useState';
+import type { FieldProps, InternalNamePath, Meta, RuleObject } from '@rc-component/form';
+import { isNonNullable, supportRef, useState } from '@rc-component/util';
 import { clsx } from 'clsx';
 
-import { isNonNullable } from '../../_util/is';
+import { isFunction, isPlainObject } from '../../_util/is';
 import { cloneElement } from '../../_util/reactNode';
-import { devUseWarning } from '../../_util/warning';
+import { useDevWarning } from '../../_util/warning';
 import { ConfigContext } from '../../config-provider';
 import useCSSVarCls from '../../config-provider/hooks/useCSSVarCls';
 import { FormContext, NoStyleItemContext } from '../context';
@@ -58,18 +56,12 @@ interface MemoInputProps {
 function isSimilarControl(a: object, b: object) {
   const keysA = Object.keys(a);
   const keysB = Object.keys(b);
-
   return (
     keysA.length === keysB.length &&
     keysA.every((key) => {
       const propValueA = (a as any)[key];
       const propValueB = (b as any)[key];
-
-      return (
-        propValueA === propValueB ||
-        typeof propValueA === 'function' ||
-        typeof propValueB === 'function'
-      );
+      return propValueA === propValueB || isFunction(propValueA) || isFunction(propValueB);
     })
   );
 }
@@ -84,7 +76,9 @@ const MemoInput = React.memo<React.PropsWithChildren<MemoInputProps>>(
 );
 
 export interface FormItemProps<Values = any>
-  extends Omit<FormItemLabelProps, 'requiredMark'>, FormItemInputProps, RcFieldProps<Values> {
+  extends Omit<FormItemLabelProps, 'requiredMark'>,
+    FormItemInputProps,
+    RcFieldProps<Values> {
   prefixCls?: string;
   noStyle?: boolean;
   style?: React.CSSProperties;
@@ -136,7 +130,8 @@ function InternalFormItem<Values = any>(props: FormItemProps<Values>): React.Rea
 
   const mergedChildren = useChildren(children);
 
-  const isRenderProps = typeof mergedChildren === 'function';
+  const isRenderProps = isFunction(mergedChildren);
+
   const notifyParentMetaChange = React.useContext(NoStyleItemContext);
 
   const { validateTrigger: contextValidateTrigger } = React.useContext(FieldContext);
@@ -154,7 +149,7 @@ function InternalFormItem<Values = any>(props: FormItemProps<Values>): React.Rea
   const [hashId, cssVarCls] = useStyle(prefixCls, rootCls);
 
   // ========================= Warn =========================
-  const warning = devUseWarning('Form.Item');
+  const warning = useDevWarning('Form.Item');
 
   if (process.env.NODE_ENV !== 'production') {
     warning(name !== null, 'usage', '`null` is passed as `name` property');
@@ -312,11 +307,15 @@ function InternalFormItem<Values = any>(props: FormItemProps<Values>): React.Rea
         const isRequired =
           required !== undefined
             ? required
-            : !!rules?.some((rule) => {
-                if (rule && typeof rule === 'object' && rule.required && !rule.warningOnly) {
+            : rules?.some((rule) => {
+                if (
+                  isPlainObject(rule) &&
+                  (rule as RuleObject).required &&
+                  !(rule as RuleObject).warningOnly
+                ) {
                   return true;
                 }
-                if (typeof rule === 'function') {
+                if (isFunction(rule)) {
                   const ruleEntity = rule(context);
                   return ruleEntity?.required && !ruleEntity?.warningOnly;
                 }
@@ -376,7 +375,7 @@ function InternalFormItem<Values = any>(props: FormItemProps<Values>): React.Rea
           }
 
           if (help || mergedErrors.length > 0 || mergedWarnings.length > 0 || props.extra) {
-            const describedbyArr = [];
+            const describedbyArr: string[] = [];
             if (help || mergedErrors.length > 0) {
               describedbyArr.push(`${fieldId}_help`);
             }

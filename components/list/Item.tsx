@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import { toArray } from '@rc-component/util';
 import { clsx } from 'clsx';
 
+import { isString } from '../_util/is';
 import { cloneElement } from '../_util/reactNode';
 import { ConfigContext } from '../config-provider';
 import { Col } from '../grid';
@@ -42,21 +43,25 @@ export interface ListItemMetaProps {
   title?: ReactNode;
 }
 
+export interface ListItemMetaRef {
+  nativeElement: HTMLDivElement;
+}
+
 type ListItemClassNamesModule = keyof Exclude<ListItemProps['classNames'], undefined>;
 type ListItemStylesModule = keyof Exclude<ListItemProps['styles'], undefined>;
 
-export const Meta: React.FC<ListItemMetaProps> = ({
-  prefixCls: customizePrefixCls,
-  className,
-  avatar,
-  title,
-  description,
-  ...others
-}) => {
+export const Meta = React.forwardRef<ListItemMetaRef, ListItemMetaProps>((props, ref) => {
+  const { prefixCls: customizePrefixCls, className, avatar, title, description, ...others } = props;
   const { getPrefixCls } = useContext(ConfigContext);
 
   const prefixCls = getPrefixCls('list', customizePrefixCls);
   const classString = clsx(`${prefixCls}-item-meta`, className);
+
+  const nativeElementRef = React.useRef<HTMLDivElement>(null);
+
+  React.useImperativeHandle(ref, () => ({
+    nativeElement: nativeElementRef.current!,
+  }));
 
   const content = (
     <div className={`${prefixCls}-item-meta-content`}>
@@ -66,12 +71,12 @@ export const Meta: React.FC<ListItemMetaProps> = ({
   );
 
   return (
-    <div {...others} className={classString}>
+    <div ref={nativeElementRef} {...others} className={classString}>
       {avatar && <div className={`${prefixCls}-item-meta-avatar`}>{avatar}</div>}
       {(title || description) && content}
     </div>
   );
-};
+});
 
 const InternalItem = React.forwardRef<HTMLDivElement, ListItemProps>((props, ref) => {
   const {
@@ -98,7 +103,7 @@ const InternalItem = React.forwardRef<HTMLDivElement, ListItemProps>((props, ref
 
   const isItemContainsTextNodeAndNotSingular = () => {
     const childNodes: React.ReactNode[] = toArray(children);
-    const hasTextNode = childNodes.some((node) => typeof node === 'string');
+    const hasTextNode = childNodes.some(isString);
     return hasTextNode && childNodes.length > 1;
   };
 

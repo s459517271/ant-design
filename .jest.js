@@ -1,6 +1,7 @@
 const compileModules = [
   'react-sticky-box',
   'rc-tween-one',
+  'tween-one',
   '@babel',
   '@ant-design',
   'countup.js',
@@ -29,12 +30,15 @@ const transformIgnorePatterns = [
   '[/\\\\]dist[/\\\\]antd.*\\.js$',
 ];
 
-function getTestRegex(libDir) {
-  if (['dist', 'lib', 'es', 'dist-min'].includes(libDir)) {
+const getTestRegex = (libDir) => {
+  if (libDir === 'dist') {
+    return '(demo|dist)\\.test\\.(j|t)sx?$';
+  }
+  if (['lib', 'es', 'dist-min'].includes(libDir)) {
     return 'demo\\.test\\.(j|t)sx?$';
   }
   return '.*\\.test\\.(j|t)sx?$';
-}
+};
 
 const shouldIgnoreSemantic =
   ['dist', 'lib', 'es', 'dist-min'].includes(process.env.LIB_DIR) ||
@@ -46,7 +50,7 @@ module.exports = {
   setupFiles: ['./tests/setup.ts', 'jest-canvas-mock'],
   setupFilesAfterEnv: ['./tests/setupAfterEnv.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'md'],
-  modulePathIgnorePatterns: ['/_site/'],
+  modulePathIgnorePatterns: ['/_site/', '/__snapshots__/vitest/'],
   moduleNameMapper: {
     '/\\.(css|less)$/': 'identity-obj-proxy',
     '^antd$': '<rootDir>/components/index',

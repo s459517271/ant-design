@@ -1,4 +1,4 @@
-import Pagination from '@rc-component/pagination/lib/locale/it_IT';
+import Pagination from '@rc-component/pagination/locale/it_IT';
 
 import type { Locale } from '.';
 import Calendar from '../calendar/locale/it_IT';
@@ -16,6 +16,9 @@ const localeValues: Locale = {
   global: {
     placeholder: 'Selezionare',
     close: 'Chiudi',
+    show: 'Mostra',
+    hide: 'Nascondi',
+    sortable: 'ordinabile',
   },
   Table: {
     filterTitle: 'Menù Filtro',
@@ -61,6 +64,7 @@ const localeValues: Locale = {
     selectAll: 'Seleziona tutti i dati',
     removeAll: 'Rimuovi tutti i dati',
     selectInvert: 'Inverti la pagina corrente',
+    deselectAll: 'Deseleziona tutti i dati',
   },
   Upload: {
     uploading: 'Caricamento...',
@@ -80,6 +84,11 @@ const localeValues: Locale = {
     copy: 'copia',
     copied: 'copia effettuata',
     expand: 'espandi',
+    collapse: 'Crollo',
+  },
+  Carousel: {
+    prevSlide: 'Diapositiva precedente',
+    nextSlide: 'Diapositiva successiva',
   },
   Form: {
     optional: '(opzionale)',

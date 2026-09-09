@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import type { DefaultRecordType } from '@rc-component/table/lib/interface';
+import type { DefaultRecordType } from '@rc-component/table';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 
 import type { SelectAllLabel, TransferProps } from '..';
 import Transfer from '..';
+import type { GetProp } from '../../_util/type';
 import mountTest from '../../../tests/shared/mountTest';
 import rtlTest from '../../../tests/shared/rtlTest';
 import { waitFakeTimer } from '../../../tests/utils';
@@ -79,7 +80,7 @@ const searchTransferProps = {
 };
 
 const generateData = (n = 20) => {
-  const data = [];
+  const data: TransferProps<DefaultRecordType>['dataSource'] = [];
   for (let i = 0; i < n; i++) {
     data.push({
       key: `${i}`,
@@ -101,9 +102,33 @@ describe('Transfer', () => {
   mountTest(Transfer);
   rtlTest(Transfer);
 
+  it('should support nativeElement ref', () => {
+    const ref = React.createRef<React.ComponentRef<typeof Transfer>>();
+    const { container } = render(<Transfer ref={ref} dataSource={[]} targetKeys={[]} />);
+
+    expect(ref.current?.nativeElement).toBe(container.querySelector('.ant-transfer'));
+  });
+
   it('should render correctly', () => {
     const wrapper = render(<Transfer {...listCommonProps} />);
     expect(wrapper.container.firstChild).toMatchSnapshot();
+  });
+
+  it('should only forward data and aria attributes to root element', () => {
+    const { container } = render(
+      <Transfer
+        {...listCommonProps}
+        data-testid="transfer-testid"
+        aria-label="transfer-label"
+        id="transfer-id"
+        title="transfer-title"
+      />,
+    );
+    const rootNode = container.querySelector('.ant-transfer');
+    expect(rootNode).toHaveAttribute('data-testid', 'transfer-testid');
+    expect(rootNode).toHaveAttribute('aria-label', 'transfer-label');
+    expect(rootNode).not.toHaveAttribute('id');
+    expect(rootNode).not.toHaveAttribute('title');
   });
 
   it('should move selected keys to corresponding list', () => {
@@ -441,6 +466,29 @@ describe('Transfer', () => {
     expect(handleSelectChange).toHaveBeenCalledWith(['1'], []);
   });
 
+  it('should disable check all when filtered items are all disabled', () => {
+    const { container } = render(
+      <Transfer
+        dataSource={[
+          { key: 'enabled', title: 'Enabled item' },
+          { key: 'disabled', title: 'Only disabled item', disabled: true },
+        ]}
+        showSearch
+        render={(item) => item.title}
+      />,
+    );
+
+    const sourceSection = container.querySelectorAll('.ant-transfer-section').item(0);
+
+    fireEvent.change(sourceSection.querySelector('input[type="text"]')!, {
+      target: { value: 'Only disabled item' },
+    });
+
+    expect(
+      sourceSection.querySelector('.ant-transfer-list-header input[type="checkbox"]'),
+    ).toBeDisabled();
+  });
+
   it('should transfer just the filtered item after search by input', () => {
     const filterOption: TransferProps<any>['filterOption'] = (inputValue, option) =>
       option.description.includes(inputValue);
@@ -586,19 +634,19 @@ describe('Transfer', () => {
   });
 
   it('should apply custom classNames and styles to Transfer', () => {
-    const customClassNames: TransferProps['classNames'] = {
+    const customClassNames: Required<GetProp<TransferProps, 'classNames', 'Return'>> = {
       root: 'custom-transfer-root',
       section: 'custom-transfer-section',
       header: 'custom-transfer-header',
       actions: 'custom-transfer-actions',
-    };
+    } as Required<GetProp<TransferProps, 'classNames', 'Return'>> & {};
 
-    const customStyles: TransferProps['styles'] = {
+    const customStyles: Required<GetProp<TransferProps, 'styles', 'Return'>> = {
       root: { color: 'rgb(255, 0, 0)' },
       section: { color: 'rgb(0, 0, 255)' },
       header: { color: 'rgb(255, 255, 0)' },
       actions: { color: 'rgb(0, 128, 0)' },
-    };
+    } as Required<GetProp<TransferProps, 'styles', 'Return'>> & {};
 
     const { container } = render(
       <Transfer
@@ -615,20 +663,20 @@ describe('Transfer', () => {
     const actionsElement = container.querySelector<HTMLElement>('.ant-transfer-actions');
 
     // check classNames
-    expect(rootElement).toHaveClass(customClassNames.root!);
-    expect(sectionElements[0]).toHaveClass(customClassNames.section!);
-    expect(sectionElements[1]).toHaveClass(customClassNames.section!);
-    expect(headerElements[0]).toHaveClass(customClassNames.header!);
-    expect(headerElements[1]).toHaveClass(customClassNames.header!);
-    expect(actionsElement).toHaveClass(customClassNames.actions!);
+    expect(rootElement).toHaveClass(customClassNames.root);
+    expect(sectionElements[0]).toHaveClass(customClassNames.section);
+    expect(sectionElements[1]).toHaveClass(customClassNames.section);
+    expect(headerElements[0]).toHaveClass(customClassNames.header);
+    expect(headerElements[1]).toHaveClass(customClassNames.header);
+    expect(actionsElement).toHaveClass(customClassNames.actions);
 
     // check styles
-    expect(rootElement).toHaveStyle({ color: customStyles.root?.color });
-    expect(sectionElements[0]).toHaveStyle({ color: customStyles.section?.color });
-    expect(sectionElements[1]).toHaveStyle({ color: customStyles.section?.color });
-    expect(headerElements[0]).toHaveStyle({ color: customStyles.header?.color });
-    expect(headerElements[1]).toHaveStyle({ color: customStyles.header?.color });
-    expect(actionsElement).toHaveStyle({ color: customStyles.actions?.color });
+    expect(rootElement).toHaveStyle({ color: customStyles.root.color });
+    expect(sectionElements[0]).toHaveStyle({ color: customStyles.section.color });
+    expect(sectionElements[1]).toHaveStyle({ color: customStyles.section.color });
+    expect(headerElements[0]).toHaveStyle({ color: customStyles.header.color });
+    expect(headerElements[1]).toHaveStyle({ color: customStyles.header.color });
+    expect(actionsElement).toHaveStyle({ color: customStyles.actions.color });
   });
 
   it('should support classNames and styles as functions', () => {
@@ -800,7 +848,7 @@ describe('Transfer', () => {
       await waitFor(() => getByTitle('2/2'));
 
       rerender(
-        <Transfer
+        <Transfer<DefaultRecordType>
           {...{ ...listDisabledProps, targetKeys: ['b', 'c'] }}
           pagination={{ pageSize: 1 }}
         />,
@@ -811,7 +859,10 @@ describe('Transfer', () => {
     it('should support change pageSize', () => {
       const dataSource = generateData();
       const { container } = render(
-        <Transfer dataSource={dataSource} pagination={{ showSizeChanger: true, simple: false }} />,
+        <Transfer<DefaultRecordType>
+          dataSource={dataSource}
+          pagination={{ showSizeChanger: true, simple: false }}
+        />,
       );
 
       fireEvent.mouseDown(container.querySelector('.ant-select')!);
@@ -835,10 +886,18 @@ describe('Transfer', () => {
     });
   });
 
-  it('remove by click icon', () => {
+  it('should use the component locale for one-way item removal', () => {
     const onChange = jest.fn();
-    const { container } = render(<Transfer {...listCommonProps} onChange={onChange} oneWay />);
-    fireEvent.click(container.querySelectorAll('.ant-transfer-list-content-item-remove')[0]);
+    const { getByRole } = render(
+      <Transfer
+        {...listCommonProps}
+        locale={{ remove: 'Remove target item' }}
+        onChange={onChange}
+        oneWay
+      />,
+    );
+
+    fireEvent.click(getByRole('button', { name: 'Remove target item' }));
     expect(onChange).toHaveBeenCalledWith([], 'left', ['b']);
   });
 

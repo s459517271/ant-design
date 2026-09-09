@@ -163,7 +163,9 @@ describe('App', () => {
     expect(document.querySelector('.ant-notification-bottomLeft')).toHaveStyle({
       top: 'auto',
       left: '0px',
-      bottom: '50px',
+      bottom:
+        'calc(var(--notification-bottom, var(--notification-margin-edge, 0px)) - var(--notification-margin-edge, 0px))',
+      '--notification-bottom': '50px',
     });
   });
 
@@ -236,16 +238,62 @@ describe('App', () => {
       expect(container.querySelector('section.ant-app')).toBeTruthy();
     });
 
-    it('should warn if component is false and cssVarCls is not empty', () => {
-      render(
+    it('should not warn if component is false', () => {
+      const { container } = render(
         <ConfigProvider>
-          <App component={false} />
+          <App component={false}>
+            <p />
+          </App>
+        </ConfigProvider>,
+      );
+      expect(container.querySelector<HTMLDivElement>('.ant-app')).toBeNull();
+      expect(errorSpy).not.toHaveBeenCalled();
+    });
+
+    it('should warn if component is false and root props are provided', () => {
+      render(
+        <App
+          component={false}
+          className="custom-class"
+          rootClassName="custom-root-class"
+          style={{ color: 'red' }}
+        >
+          <p />
+        </App>,
+      );
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Warning: [antd: App] When using cssVar, ensure `component` is assigned a valid React component string.',
+      );
+    });
+
+    it('should warn if component is false and context root props are provided', () => {
+      render(
+        <ConfigProvider app={{ className: 'custom-class', style: { color: 'red' } }}>
+          <App component={false}>
+            <p />
+          </App>
         </ConfigProvider>,
       );
 
       expect(errorSpy).toHaveBeenCalledWith(
         'Warning: [antd: App] When using cssVar, ensure `component` is assigned a valid React component string.',
       );
+    });
+
+    it('should warn if component is false and ref is not empty', () => {
+      const domRef = React.createRef<HTMLSpanElement>();
+      render(<App ref={domRef} component={false} />);
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Warning: [antd: App] `ref` is not supported when `component` is `false`. Please provide a valid `component` instead.',
+      );
+    });
+
+    it('App should support Ref', () => {
+      const domRef = React.createRef<HTMLSpanElement>();
+      const { container } = render(<App ref={domRef} className="bamboo" component="span" />);
+      expect(domRef.current).toBe(container.querySelector('.bamboo'));
     });
   });
 });

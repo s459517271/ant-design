@@ -1,14 +1,21 @@
 import * as React from 'react';
 
 import Divider from '..';
+import type { TitlePlacement } from '..';
 import type { Orientation } from '../../_util/hooks';
 import mountTest from '../../../tests/shared/mountTest';
 import { render } from '../../../tests/utils';
 import ConfigProvider from '../../config-provider';
-import type { TitlePlacement } from '../index';
 
 describe('Divider', () => {
   mountTest(Divider);
+
+  it('should support nativeElement ref', () => {
+    const ref = React.createRef<React.ComponentRef<typeof Divider>>();
+    const { container } = render(<Divider ref={ref} />);
+
+    expect(ref.current?.nativeElement).toBe(container.querySelector('.ant-divider'));
+  });
 
   it('not show children when vertical', () => {
     const errSpy = jest.spyOn(console, 'error').mockImplementation(() => {});

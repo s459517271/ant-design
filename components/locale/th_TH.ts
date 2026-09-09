@@ -1,4 +1,4 @@
-import Pagination from '@rc-component/pagination/lib/locale/th_TH';
+import Pagination from '@rc-component/pagination/locale/th_TH';
 
 import type { Locale } from '.';
 import Calendar from '../calendar/locale/th_TH';
@@ -16,6 +16,9 @@ const localeValues: Locale = {
   global: {
     placeholder: 'กรุณาเลือก',
     close: 'ปิด',
+    show: 'แสดง',
+    hide: 'ซ่อน',
+    sortable: 'จัดเรียงได้',
   },
   Table: {
     filterTitle: 'ตัวกรอง',
@@ -82,6 +85,10 @@ const localeValues: Locale = {
     copied: 'คัดลอกแล้ว',
     expand: 'ขยาย',
     collapse: 'ย่อ',
+  },
+  Carousel: {
+    prevSlide: 'สไลด์ก่อนหน้า',
+    nextSlide: 'สไลด์ถัดไป',
   },
   Form: {
     optional: '(ไม่จำเป็น)',

@@ -1,4 +1,4 @@
-import Pagination from '@rc-component/pagination/lib/locale/zh_TW';
+import Pagination from '@rc-component/pagination/locale/zh_TW';
 
 import type { Locale } from '.';
 import Calendar from '../calendar/locale/zh_TW';
@@ -16,6 +16,9 @@ const localeValues: Locale = {
   global: {
     placeholder: '請選擇',
     close: '關閉',
+    show: '顯示',
+    hide: '隱藏',
+    sortable: '可排序',
   },
   Table: {
     filterTitle: '篩選器',
@@ -61,6 +64,7 @@ const localeValues: Locale = {
     selectAll: '全選所有',
     removeAll: '刪除全部',
     selectInvert: '反選當頁',
+    deselectAll: '取消全選',
   },
   Upload: {
     uploading: '正在上傳...',
@@ -82,7 +86,12 @@ const localeValues: Locale = {
     expand: '展開',
     collapse: '收起',
   },
+  Carousel: {
+    prevSlide: '上一張幻燈片',
+    nextSlide: '下一張幻燈片',
+  },
   Form: {
+    optional: '（選填）',
     defaultValidateMessages: {
       default: '字段驗證錯誤${label}',
       required: '請輸入${label}',

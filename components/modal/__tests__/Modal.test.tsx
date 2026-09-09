@@ -7,6 +7,7 @@ import mountTest from '../../../tests/shared/mountTest';
 import rtlTest from '../../../tests/shared/rtlTest';
 import { act, createEvent, fireEvent, render, waitFakeTimer } from '../../../tests/utils';
 import ConfigProvider from '../../config-provider';
+import zhTW from '../../locale/zh_TW';
 
 jest.mock('@rc-component/util/lib/Portal');
 
@@ -205,6 +206,15 @@ describe('Modal', () => {
     });
   });
 
+  it('responsive width should support number', () => {
+    render(<Modal open width={{ xs: 520 }} />);
+
+    const modalEle = document.querySelector<HTMLDivElement>('.ant-modal')!;
+    expect(modalEle).toHaveStyle({
+      '--ant-modal-xs-width': '520px',
+    });
+  });
+
   it('should support centered prop', () => {
     render(<Modal open centered />);
     expect(document.querySelector('.ant-modal-centered')).toBeTruthy();
@@ -373,6 +383,15 @@ describe('Modal', () => {
     expect(element).toHaveAttribute('aria-label', 'xxx');
   });
 
+  it('should localize the close button accessible name', () => {
+    render(
+      <ConfigProvider locale={zhTW}>
+        <Modal open />
+      </ConfigProvider>,
+    );
+    expect(document.body.querySelector('.ant-modal-close')).toHaveAttribute('aria-label', '關閉');
+  });
+
   describe('closable onClose and afterClose ', () => {
     const mockFn = {
       afterClose: jest.fn(),
@@ -480,6 +499,52 @@ describe('Modal', () => {
     );
   });
 
+  it('should support focusable global config', () => {
+    const classNames = jest.fn(() => ({}));
+
+    render(
+      <ConfigProvider modal={{ focusable: { trap: false, focusTriggerAfterClose: false } }}>
+        <Modal open getContainer={false} classNames={classNames}>
+          Here is content of Modal
+        </Modal>
+      </ConfigProvider>,
+    );
+
+    expect(classNames).toHaveBeenCalledWith(
+      expect.objectContaining({
+        props: expect.objectContaining({
+          focusable: {
+            trap: false,
+            focusTriggerAfterClose: false,
+          },
+        }),
+      }),
+    );
+  });
+
+  it('should prefer focusable prop over global config', () => {
+    const classNames = jest.fn(() => ({}));
+
+    render(
+      <ConfigProvider modal={{ focusable: { trap: false, focusTriggerAfterClose: false } }}>
+        <Modal open getContainer={false} focusable={{ trap: true }} classNames={classNames}>
+          Here is content of Modal
+        </Modal>
+      </ConfigProvider>,
+    );
+
+    expect(classNames).toHaveBeenCalledWith(
+      expect.objectContaining({
+        props: expect.objectContaining({
+          focusable: {
+            trap: true,
+            focusTriggerAfterClose: false,
+          },
+        }),
+      }),
+    );
+  });
+
   it('should warning when using deprecated autoFocusButton', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -519,5 +584,23 @@ describe('Modal', () => {
     );
 
     errorSpy.mockRestore();
+  });
+
+  it('should not lock body scroll when scrollLock is false', () => {
+    const { unmount } = render(<Modal open scrollLock={false} />);
+
+    expect(document.body).not.toHaveStyle({
+      overflowY: 'hidden',
+    });
+
+    unmount();
+  });
+
+  it('should lock body scroll by default', () => {
+    const { unmount } = render(<Modal open />);
+    expect(document.body).toHaveStyle({
+      overflowY: 'hidden',
+    });
+    unmount();
   });
 });

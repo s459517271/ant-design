@@ -2,18 +2,24 @@ import React from 'react';
 
 import Collapse from '..';
 import type { CollapseProps } from '..';
+import type { GetProp } from '../../_util/type';
 import { render } from '../../../tests/utils';
+import ConfigProvider from '../../config-provider';
+import {
+  expectSemanticRootStylePriority,
+  semanticRootStylePriority,
+} from '../../../tests/shared/semanticStylePriority';
 
 describe('Collapse.Semantic', () => {
   it('should support styles and classNames', () => {
-    const customClassNames = {
+    const customClassNames: Required<GetProp<CollapseProps, 'classNames', 'Return'>> = {
       root: 'custom-root',
       header: 'custom-header',
       title: 'custom-title',
       body: 'custom-body',
       icon: 'custom-icon',
     };
-    const customStyles = {
+    const customStyles: Required<GetProp<CollapseProps, 'styles', 'Return'>> = {
       root: { color: 'rgb(255, 0, 0)' },
       header: { color: 'rgb(0, 0, 255)' },
       title: { color: 'rgb(0, 128, 0)' },
@@ -51,7 +57,7 @@ describe('Collapse.Semantic', () => {
   });
 
   it('should support function-based classNames and styles', () => {
-    const fnClassNames: CollapseProps['classNames'] = ({ props }) => ({
+    const fnClassNames: GetProp<CollapseProps, 'classNames'> = ({ props }) => ({
       root: `size-${props.size}`,
       header: props.ghost ? 'ghost-header' : 'normal-header',
       title: 'dynamic-title',
@@ -59,7 +65,7 @@ describe('Collapse.Semantic', () => {
       icon: props.expandIconPlacement === 'end' ? 'end-icon' : 'start-icon',
     });
 
-    const fnStyles: CollapseProps['styles'] = ({ props }) => ({
+    const fnStyles: GetProp<CollapseProps, 'styles'> = ({ props }) => ({
       root: { borderWidth: props.ghost ? '0px' : '1px' },
       header: { fontSize: props.size === 'large' ? '18px' : '14px' },
       title: { fontWeight: props.size === 'large' ? 'bold' : 'normal' },
@@ -98,5 +104,23 @@ describe('Collapse.Semantic', () => {
     expect(titleElement).toHaveStyle({ fontWeight: 'bold' });
     expect(bodyElement).toHaveStyle({ padding: '16px' });
     expect(iconElement).toHaveStyle({ transform: 'rotate(90deg)' });
+  });
+  it('should follow root style priority', () => {
+    const { container } = render(
+      <ConfigProvider
+        collapse={{
+          styles: semanticRootStylePriority.contextStyles,
+          style: semanticRootStylePriority.contextStyle,
+        }}
+      >
+        <Collapse
+          items={[{ key: '1', label: 'title' }]}
+          styles={semanticRootStylePriority.styles}
+          style={semanticRootStylePriority.style}
+        />
+      </ConfigProvider>,
+    );
+
+    expectSemanticRootStylePriority(container.querySelector('.ant-collapse'));
   });
 });

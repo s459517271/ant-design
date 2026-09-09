@@ -35,6 +35,17 @@ describe('Avatar Render', () => {
     });
   });
 
+  it('should support Avatar.Group nativeElement ref', () => {
+    const ref = React.createRef<React.ComponentRef<typeof Avatar.Group>>();
+    const { container } = render(
+      <Avatar.Group ref={ref}>
+        <Avatar />
+      </Avatar.Group>,
+    );
+
+    expect(ref.current?.nativeElement).toBe(container.querySelector('.ant-avatar-group'));
+  });
+
   it('Render long string correctly', () => {
     const { container } = render(<Avatar>TestString</Avatar>);
     expect(container.querySelectorAll('.ant-avatar-string').length).toBe(1);
@@ -53,7 +64,7 @@ describe('Avatar Render', () => {
 
   it('should handle onError correctly', () => {
     const LOAD_FAILURE_SRC = 'http://error.url/';
-    const LOAD_SUCCESS_SRC = 'https://api.dicebear.com/7.x/pixel-art/svg';
+    const LOAD_SUCCESS_SRC = 'https://api.dicebear.com/10.x/pixel-art/svg';
     const Foo: React.FC = () => {
       const [avatarSrc, setAvatarSrc] = useState<typeof LOAD_FAILURE_SRC | typeof LOAD_SUCCESS_SRC>(
         LOAD_FAILURE_SRC,
@@ -75,7 +86,7 @@ describe('Avatar Render', () => {
 
   it('should show image on success after a failure state', () => {
     const LOAD_FAILURE_SRC = 'http://error.url';
-    const LOAD_SUCCESS_SRC = 'https://api.dicebear.com/7.x/pixel-art/svg';
+    const LOAD_SUCCESS_SRC = 'https://api.dicebear.com/10.x/pixel-art/svg';
 
     const div = global.document.createElement('div');
     global.document.body.appendChild(div);
@@ -167,7 +178,7 @@ describe('Avatar Render', () => {
   });
 
   it('should exist crossorigin attribute', () => {
-    const LOAD_SUCCESS_SRC = 'https://api.dicebear.com/7.x/pixel-art/svg';
+    const LOAD_SUCCESS_SRC = 'https://api.dicebear.com/10.x/pixel-art/svg';
     const crossOrigin = 'anonymous';
     const { container } = render(
       <Avatar src={LOAD_SUCCESS_SRC} crossOrigin={crossOrigin}>
@@ -175,11 +186,11 @@ describe('Avatar Render', () => {
       </Avatar>,
     );
     expect(container.querySelector('img')?.crossOrigin).toBeTruthy();
-    expect(container.querySelector('img')?.crossOrigin).toEqual(crossOrigin);
+    expect(container.querySelector('img')?.crossOrigin).toBe(crossOrigin);
   });
 
   it('should not exist crossorigin attribute', () => {
-    const LOAD_SUCCESS_SRC = 'https://api.dicebear.com/7.x/pixel-art/svg';
+    const LOAD_SUCCESS_SRC = 'https://api.dicebear.com/10.x/pixel-art/svg';
     const { container } = render(<Avatar src={LOAD_SUCCESS_SRC}>crossorigin</Avatar>);
     expect(container.querySelector('img')?.crossOrigin).toBeFalsy();
     expect(container.querySelector('img')?.crossOrigin).toBeFalsy();

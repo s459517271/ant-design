@@ -1,5 +1,4 @@
 import React from 'react';
-import type { SingleValueType } from '@rc-component/cascader/lib/Cascader';
 
 import type { DefaultOptionType } from '..';
 import Cascader from '..';
@@ -15,6 +14,8 @@ import Input from '../../input';
 import Space from '../../space';
 
 const { SHOW_CHILD, SHOW_PARENT } = Cascader;
+
+type SingleValueType = (string | number)[];
 
 function toggleOpen(container: ReturnType<typeof render>['container']) {
   fireEvent.mouseDown(container.querySelector('.ant-select')!);
@@ -229,13 +230,27 @@ describe('Cascader', () => {
     expect(dropdown).toMatchSnapshot();
   });
 
+  it('should support notFoundContent={null}', () => {
+    const { container } = render(<Cascader open options={[]} notFoundContent={null} />);
+
+    expect(container.querySelector('.ant-empty')).toBeNull();
+  });
+
+  it('should support notFoundContent={null} in panel', () => {
+    const { container } = render(<Cascader.Panel options={[]} notFoundContent={null} />);
+
+    expect(container.querySelector('.ant-empty')).toBeNull();
+  });
+
   it('should support to clear selection', () => {
     const { container } = render(
       <Cascader options={options} defaultValue={['zhejiang', 'hangzhou']} />,
     );
     expect(container.querySelector('.ant-select-content')).toHaveTextContent('Zhejiang / Hangzhou');
-    fireEvent.mouseDown(container.querySelector('.ant-select-clear')!);
-    expect(container.querySelector('.ant-select-content')).toHaveTextContent('');
+    fireEvent.click(container.querySelector('.ant-select-clear')!);
+    expect(container.querySelector('.ant-select-content')).not.toHaveTextContent(
+      'Zhejiang / Hangzhou',
+    );
   });
 
   it('should clear search input when clear selection', () => {
@@ -243,8 +258,8 @@ describe('Cascader', () => {
       <Cascader options={options} defaultValue={['zhejiang', 'hangzhou']} showSearch />,
     );
     fireEvent.change(container.querySelector('input')!, { target: { value: 'xxx' } });
-    fireEvent.mouseDown(container.querySelector('.ant-select-clear')!);
-    expect(container.querySelector('input')?.value).toEqual('');
+    fireEvent.click(container.querySelector('.ant-select-clear')!);
+    expect(container.querySelector('input')?.value).toBe('');
   });
 
   it('should change filtered item when options are changed', () => {
@@ -403,13 +418,11 @@ describe('Cascader', () => {
 
   it('placeholder works correctly', () => {
     const { container, rerender } = render(<Cascader options={[]} />);
-    expect(container.querySelector('.ant-select-placeholder')?.textContent).toEqual('');
+    expect(container.querySelector('.ant-select-placeholder')?.textContent).toBe('');
 
     const customPlaceholder = 'Custom placeholder';
     rerender(<Cascader options={[]} placeholder={customPlaceholder} />);
-    expect(container.querySelector('.ant-select-placeholder')?.textContent).toEqual(
-      customPlaceholder,
-    );
+    expect(container.querySelector('.ant-select-placeholder')?.textContent).toBe(customPlaceholder);
   });
 
   it('placement work correctly', async () => {
@@ -429,7 +442,7 @@ describe('Cascader', () => {
     toggleOpen(container);
 
     // Inject in tests/__mocks__/@rc-component/trigger.tsx
-    expect((global as any)?.triggerProps.popupPlacement).toEqual('topRight');
+    expect((global as any)?.triggerProps.popupPlacement).toBe('topRight');
   });
 
   it('popup correctly with defaultValue RTL', () => {
@@ -546,7 +559,7 @@ describe('Cascader', () => {
     toggleOpen(container);
 
     // Inject in tests/__mocks__/@rc-component/trigger.tsx
-    expect((global as any).triggerProps.popupPlacement).toEqual('bottomRight');
+    expect((global as any).triggerProps.popupPlacement).toBe('bottomRight');
   });
 
   describe('legacy props', () => {
@@ -944,6 +957,117 @@ describe('Cascader', () => {
       render(
         <ConfigProvider cascader={{ loadingIcon: <div>foobar</div> }}>
           <Cascader loading options={options} loadingIcon={<div>bamboo</div>} />
+        </ConfigProvider>,
+      );
+      expect(screen.getAllByText('bamboo').length).toBe(1);
+    });
+  });
+
+  describe('clearIcon', () => {
+    it('should support custom clearIcon', () => {
+      render(
+        <Cascader
+          open
+          allowClear={{ clearIcon: <div>bamboo</div> }}
+          options={options}
+          defaultValue={['zhejiang', 'hangzhou']}
+        />,
+      );
+      expect(screen.getAllByText('bamboo').length).toBe(1);
+    });
+
+    it('should support ConfigProvider clearIcon', () => {
+      render(
+        <ConfigProvider cascader={{ clearIcon: <div>foobar</div> }}>
+          <Cascader options={options} defaultValue={['zhejiang', 'hangzhou']} allowClear />
+        </ConfigProvider>,
+      );
+      expect(screen.getAllByText('foobar').length).toBe(1);
+    });
+
+    it('should prefer prop clearIcon over ConfigProvider clearIcon', () => {
+      render(
+        <ConfigProvider cascader={{ clearIcon: <div>foobar</div> }}>
+          <Cascader
+            allowClear={{ clearIcon: <div>bamboo</div> }}
+            options={options}
+            defaultValue={['zhejiang', 'hangzhou']}
+          />
+        </ConfigProvider>,
+      );
+      expect(screen.getAllByText('bamboo').length).toBe(1);
+    });
+  });
+
+  describe('removeIcon', () => {
+    it('should support custom removeIcon', () => {
+      render(
+        <Cascader
+          multiple
+          removeIcon={<div>bamboo</div>}
+          options={options}
+          defaultValue={[
+            ['zhejiang', 'hangzhou'],
+            ['jiangsu', 'nanjing'],
+          ]}
+        />,
+      );
+      expect(screen.getAllByText('bamboo').length).toBe(2);
+    });
+
+    it('should support ConfigProvider removeIcon', () => {
+      render(
+        <ConfigProvider cascader={{ removeIcon: <div>foobar</div> }}>
+          <Cascader
+            multiple
+            options={options}
+            defaultValue={[
+              ['zhejiang', 'hangzhou'],
+              ['jiangsu', 'nanjing'],
+            ]}
+          />
+        </ConfigProvider>,
+      );
+      expect(screen.getAllByText('foobar').length).toBe(2);
+    });
+
+    it('should prefer prop removeIcon over ConfigProvider removeIcon', () => {
+      render(
+        <ConfigProvider cascader={{ removeIcon: <div>foobar</div> }}>
+          <Cascader
+            multiple
+            options={options}
+            defaultValue={[
+              ['zhejiang', 'hangzhou'],
+              ['jiangsu', 'nanjing'],
+            ]}
+            removeIcon={<div>bamboo</div>}
+          />
+        </ConfigProvider>,
+      );
+      expect(screen.getAllByText('bamboo').length).toBe(2);
+    });
+  });
+
+  describe('searchIcon', () => {
+    it('should support custom searchIcon', () => {
+      render(<Cascader open showSearch={{ searchIcon: <div>bamboo</div> }} options={options} />);
+      expect(screen.getAllByText('bamboo').length).toBe(1);
+    });
+
+    it('should support ConfigProvider searchIcon', () => {
+      render(
+        <ConfigProvider cascader={{ searchIcon: <div>foobar</div> }}>
+          <Cascader open options={options} showSearch />
+        </ConfigProvider>,
+      );
+      expect(screen.getAllByText('foobar').length).toBe(1);
+    });
+
+    it('should prefer prop searchIcon over ConfigProvider searchIcon', () => {
+      render(
+        <ConfigProvider cascader={{ searchIcon: <div>foobar</div> }}>
+          <Cascader open showSearch={{ searchIcon: <div>bamboo</div> }} options={options} />
         </ConfigProvider>,
       );
       expect(screen.getAllByText('bamboo').length).toBe(1);

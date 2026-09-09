@@ -3,9 +3,9 @@ import { Popover } from 'antd';
 import { createStyles } from 'antd-style';
 
 import useLocale from '../../../hooks/useLocale';
-import SiteContext from '../../../theme/slots/SiteContext';
 import SponsorCard from '../../../theme/slots/Header/SponsorCard';
 import { getSponsorUrl, sponsors } from '../../../theme/slots/Header/sponsors';
+import SiteContext from '../../../theme/slots/SiteContext';
 
 const useStyle = createStyles(({ cssVar, css }) => ({
   wrap: css`
@@ -14,7 +14,7 @@ const useStyle = createStyles(({ cssVar, css }) => ({
     justify-content: center;
     gap: 0;
     padding-top: 20px;
-    border-top: 1px solid ${cssVar.colorBorderSecondary};
+    border-top: ${cssVar.lineWidth} ${cssVar.lineType} ${cssVar.colorBorderSecondary};
     position: relative;
     z-index: 1;
     width: 100%;
@@ -37,7 +37,7 @@ const useStyle = createStyles(({ cssVar, css }) => ({
     border-radius: 8px;
     text-decoration: none;
     color: ${cssVar.colorTextSecondary};
-    transition: background ${cssVar.motionDurationFast};
+    transition: background-color ${cssVar.motionDurationFast};
 
     &:hover {
       background: ${cssVar.colorFillSecondary};
@@ -49,7 +49,7 @@ const useStyle = createStyles(({ cssVar, css }) => ({
     border-radius: 50%;
     object-fit: contain;
     background: ${cssVar.colorBgContainer};
-    border: 1px solid ${cssVar.colorBorderSecondary};
+    border: ${cssVar.lineWidth} ${cssVar.lineType} ${cssVar.colorBorderSecondary};
   `,
   sponsorName: css`
     font-size: 13px;
@@ -85,7 +85,7 @@ const BannerSponsors: React.FC = () => {
             <a
               href={getSponsorUrl(sponsor.url, lang)}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className={styles.sponsorItem}
             >
               <img src={sponsor.logo} alt={sponsor.name} className={styles.sponsorLogo} />

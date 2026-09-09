@@ -131,6 +131,18 @@ describe('Table.filter', () => {
     );
   });
 
+  it('marks filter dropdown wrapper as presentation', async () => {
+    const { container } = render(createTable());
+    fireEvent.click(container.querySelector('span.ant-dropdown-trigger')!, nativeEvent);
+
+    await waitFor(() => {
+      const dropdown = container.querySelector('.ant-table-filter-dropdown');
+
+      expect(dropdown).toHaveAttribute('role', 'presentation');
+      expect(dropdown).not.toHaveAttribute('aria-hidden');
+    });
+  });
+
   it('renders empty menu correctly', () => {
     resetWarned();
 
@@ -395,8 +407,9 @@ describe('Table.filter', () => {
       }),
     );
     fireEvent.click(container.querySelector('.ant-dropdown-trigger')!);
-    expect(onOpenChange).toHaveBeenCalledWith(true);
-    expect(onFilterDropdownOpenChange).toHaveBeenCalledWith(true);
+    fireEvent.click(container.querySelector('.ant-dropdown-trigger')!);
+    expect(onOpenChange.mock.calls).toEqual([[true], [false]]);
+    expect(onFilterDropdownOpenChange.mock.calls).toEqual([[true], [false]]);
   });
 
   it('can be controlled by filteredValue', () => {
@@ -817,10 +830,10 @@ describe('Table.filter', () => {
             container
               ?.querySelector('.ant-table-filter-dropdown')
               ?.querySelectorAll<HTMLInputElement>('.ant-checkbox-input')[0].checked,
-          ).toEqual(true),
+          ).toBe(true),
         );
 
-        expect(typeof Array.from(filterKeys)[0]).toEqual('number');
+        expect(typeof Array.from(filterKeys)[0]).toBe('number');
 
         expect(Array.from(filterKeys).length > 0).toBeTruthy();
 
@@ -1537,14 +1550,14 @@ describe('Table.filter', () => {
       container.querySelector(
         '.ant-table-filter-dropdown-btns .ant-btn-color-primary.ant-btn-variant-solid',
       )?.textContent,
-    ).toEqual('Bamboo');
+    ).toBe('Bamboo');
     expect(
       container.querySelector('.ant-table-filter-dropdown-btns .ant-btn-link')?.textContent,
-    ).toEqual('Reset');
-    expect(container.querySelector('.ant-table-filter-dropdown-checkall')?.textContent).toEqual(
+    ).toBe('Reset');
+    expect(container.querySelector('.ant-table-filter-dropdown-checkall')?.textContent).toBe(
       'Select all items',
     );
-    expect(container.querySelector('.ant-input')?.getAttribute('placeholder')).toEqual(
+    expect(container.querySelector('.ant-input')?.getAttribute('placeholder')).toBe(
       'Search in filters',
     );
   });
@@ -1651,7 +1664,7 @@ describe('Table.filter', () => {
     );
 
     expect(container.querySelectorAll('tbody tr')).toHaveLength(1);
-    expect(container.querySelector('tbody tr td')?.textContent).toEqual('Jack');
+    expect(container.querySelector('tbody tr td')?.textContent).toBe('Jack');
   });
 
   it(`shouldn't keep status when controlled filteredValue isn't change`, () => {
@@ -1930,7 +1943,7 @@ describe('Table.filter', () => {
 
     const { container } = render(<App />);
 
-    expect(container.querySelector('.ant-table-tbody .ant-table-cell')?.textContent).toEqual(
+    expect(container.querySelector('.ant-table-tbody .ant-table-cell')?.textContent).toBe(
       `${32}`,
     );
     fireEvent.click(container.querySelector('.ant-dropdown-trigger.ant-table-filter-trigger')!);
@@ -1938,7 +1951,7 @@ describe('Table.filter', () => {
     fireEvent.click(
       container.querySelector('.ant-btn.ant-btn-color-primary.ant-btn-variant-solid.ant-btn-sm')!,
     );
-    expect(container.querySelector('.ant-table-tbody .ant-table-cell')?.textContent).toEqual(
+    expect(container.querySelector('.ant-table-tbody .ant-table-cell')?.textContent).toBe(
       `${66}`,
     );
   });
@@ -2096,7 +2109,7 @@ describe('Table.filter', () => {
 
     const { container } = render(<App />);
 
-    expect(container.querySelectorAll('.ant-table-tbody .ant-table-row').length).toEqual(4);
+    expect(container.querySelectorAll('.ant-table-tbody .ant-table-row').length).toBe(4);
     // Open
     fireEvent.click(container.querySelector('.ant-table-filter-trigger')!);
     function getFilterMenu() {
@@ -2112,11 +2125,11 @@ describe('Table.filter', () => {
     );
     refreshTimer();
 
-    expect(container.querySelectorAll('.ant-table-tbody .ant-table-row').length).toEqual(1);
+    expect(container.querySelectorAll('.ant-table-tbody .ant-table-row').length).toBe(1);
 
     fireEvent.click(container.querySelector('.rest-btn')!);
 
-    expect(container.querySelectorAll('.ant-table-tbody .ant-table-row').length).toEqual(4);
+    expect(container.querySelectorAll('.ant-table-tbody .ant-table-row').length).toBe(4);
   });
 
   describe('filter tree mode', () => {
@@ -2447,6 +2460,46 @@ describe('Table.filter', () => {
         .className.includes('ant-tree-checkbox-checked'),
     ).toBe(false);
     expect(container.querySelectorAll('.ant-tree-checkbox-checked').length).toBe(0);
+  });
+
+  it('filterMultiple is false - supports empty string value in tree mode', () => {
+    const { container } = render(
+      createTable({
+        dataSource: [
+          { key: 'blank', status: '', name: 'Blank row' },
+          { key: 'filled', status: 'filled', name: 'Filled row' },
+        ],
+        columns: [
+          { title: 'Name', dataIndex: 'name' },
+          {
+            title: 'Status',
+            dataIndex: 'status',
+            filterMode: 'tree',
+            filterMultiple: false,
+            filters: [
+              { text: 'Empty value', value: '' },
+              { text: 'Filled value', value: 'filled' },
+            ],
+            onFilter: (value, record) => record.status === value,
+          },
+        ],
+      }),
+    );
+
+    fireEvent.click(container.querySelector('span.ant-dropdown-trigger')!, nativeEvent);
+    act(() => {
+      jest.runAllTimers();
+    });
+    fireEvent.click(container.querySelectorAll('.ant-tree-checkbox')[0]);
+
+    expect(container.querySelectorAll('.ant-tree-checkbox-checked')).toHaveLength(1);
+
+    fireEvent.click(
+      container.querySelector(
+        '.ant-table-filter-dropdown-btns .ant-btn-color-primary.ant-btn-variant-solid',
+      )!,
+    );
+    expect(renderedNames(container)).toEqual(['Blank row']);
   });
 
   it('filterMultiple is false - select item', () => {
@@ -2885,7 +2938,7 @@ describe('Table.filter', () => {
       }),
     );
 
-    expect(container.querySelector('.ant-table-column-title')?.textContent).toEqual('RenderTitle');
+    expect(container.querySelector('.ant-table-column-title')?.textContent).toBe('RenderTitle');
     expect(title).toHaveBeenCalledWith(
       expect.objectContaining({
         filters: { name: ['boy'] },
@@ -2988,7 +3041,7 @@ describe('Table.filter', () => {
     fireEvent.click(container.querySelector('.ant-dropdown-trigger.ant-table-filter-trigger')!);
 
     // There is one checkbox and it begins unchecked.
-    expect(container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.checked).toEqual(
+    expect(container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.checked).toBe(
       false,
     );
 
@@ -2996,7 +3049,7 @@ describe('Table.filter', () => {
     fireEvent.click(container.querySelector('input[type="checkbox"]')!);
 
     // The checkbox is now checked.
-    expect(container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.checked).toEqual(
+    expect(container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.checked).toBe(
       true,
     );
     fireEvent.click(container.querySelector('.ant-btn-primary')!);
@@ -3004,7 +3057,7 @@ describe('Table.filter', () => {
     rerender(createTable({ ...tableProps, dataSource: [{ name: 'Foo' }] }));
 
     // The checkbox is still checked.
-    expect(container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.checked).toEqual(
+    expect(container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.checked).toBe(
       true,
     );
   });
@@ -3092,7 +3145,7 @@ describe('Table.filter', () => {
       expect(container.querySelector('.ant-table-filter-dropdown')).toHaveTextContent('foo');
 
       expect(mockTableFilterRenderEmpty).toHaveBeenCalled();
-      expect(mockTableFilterRenderEmpty.mock.calls[0][0]).toEqual('Table.filter');
+      expect(mockTableFilterRenderEmpty.mock.calls[0][0]).toBe('Table.filter');
     });
 
     it('allow `false` to not render empty states', async () => {
@@ -3156,6 +3209,62 @@ describe('Table.filter', () => {
 
       fireEvent.click(container.querySelector('.ant-dropdown-trigger')!);
       expect(container.querySelector('.ant-dropdown-placement-topLeft')).toBeTruthy();
+    });
+
+    it('should sync selected keys while controlled dropdown stays open', async () => {
+      const getTable = (filteredValue: React.Key[]) =>
+        createTable({
+          columns: [
+            {
+              ...column,
+              filterMultiple: false,
+              filteredValue,
+              filterDropdownProps: {
+                open: true,
+              },
+            },
+          ],
+        });
+
+      const { container, rerender } = render(getTable(['boy']));
+
+      await waitFor(() => {
+        expect(container.querySelectorAll<HTMLInputElement>('input[type="radio"]')[0]).toBeChecked();
+      });
+
+      rerender(getTable(['girl']));
+
+      await waitFor(() => {
+        expect(container.querySelectorAll<HTMLInputElement>('input[type="radio"]')[1]).toBeChecked();
+      });
+    });
+
+    it('should clear search when controlled dropdown closes', async () => {
+      const getTable = (open: boolean) =>
+        createTable({
+          columns: [
+            {
+              ...column,
+              filterSearch: true,
+              filterDropdownProps: {
+                open,
+              },
+            },
+          ],
+        });
+
+      const { container, rerender } = render(getTable(true));
+      const searchInput = container.querySelector<HTMLInputElement>('.ant-input')!;
+
+      fireEvent.change(searchInput, { target: { value: 'boy' } });
+      expect(searchInput).toHaveValue('boy');
+
+      rerender(getTable(false));
+      rerender(getTable(true));
+
+      await waitFor(() => {
+        expect(container.querySelector('.ant-input')).toHaveValue('');
+      });
     });
   });
 });

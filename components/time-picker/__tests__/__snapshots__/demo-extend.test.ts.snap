@@ -25,6 +25,7 @@ exports[`renders components/time-picker/demo/12hours.tsx extend context correctl
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -1491,6 +1492,7 @@ exports[`renders components/time-picker/demo/12hours.tsx extend context correctl
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -2957,6 +2959,7 @@ exports[`renders components/time-picker/demo/12hours.tsx extend context correctl
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -3822,6 +3825,7 @@ Array [
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -5398,6 +5402,7 @@ Array [
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -6961,6 +6966,7 @@ Array [
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -8512,6 +8518,7 @@ Array [
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -10076,6 +10083,7 @@ Array [
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -11639,6 +11647,7 @@ Array [
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -11661,9 +11670,10 @@ Array [
           </svg>
         </span>
       </span>
-      <span
+      <button
+        aria-label="Clear"
         class="ant-picker-clear"
-        role="button"
+        type="button"
       >
         <span
           aria-label="close-circle"
@@ -11685,7 +11695,7 @@ Array [
             />
           </svg>
         </span>
-      </span>
+      </button>
     </div>
   </div>,
   <div
@@ -12622,6 +12632,7 @@ Array [
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -13086,6 +13097,7 @@ Array [
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -14652,7 +14664,7 @@ Array [
       class="ant-picker-range-separator"
     >
       <span
-        aria-label="to"
+        aria-hidden="true"
         class="ant-picker-separator"
       >
         <span
@@ -14696,6 +14708,7 @@ Array [
       class="ant-picker-suffix"
     >
       <span
+        aria-hidden="true"
         aria-label="clock-circle"
         class="anticon anticon-clock-circle"
         role="img"
@@ -14718,9 +14731,10 @@ Array [
         </svg>
       </span>
     </span>
-    <span
+    <button
+      aria-label="Clear"
       class="ant-picker-clear"
-      role="button"
+      type="button"
     >
       <span
         aria-label="close-circle"
@@ -14742,7 +14756,7 @@ Array [
           />
         </svg>
       </span>
-    </span>
+    </button>
   </div>,
   <div
     class="ant-picker-dropdown ant-slide-up-appear ant-slide-up-appear-prepare ant-slide-up css-var-test-id ant-picker-css-var ant-picker-dropdown-range ant-picker-dropdown-placement-bottomLeft"
@@ -16284,6 +16298,7 @@ exports[`renders components/time-picker/demo/render-panel.tsx extend context cor
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -17854,6 +17869,7 @@ exports[`renders components/time-picker/demo/size.tsx extend context correctly 1
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -17876,9 +17892,10 @@ exports[`renders components/time-picker/demo/size.tsx extend context correctly 1
             </svg>
           </span>
         </span>
-        <span
+        <button
+          aria-label="Clear"
           class="ant-picker-clear"
-          role="button"
+          type="button"
         >
           <span
             aria-label="close-circle"
@@ -17900,7 +17917,7 @@ exports[`renders components/time-picker/demo/size.tsx extend context correctly 1
               />
             </svg>
           </span>
-        </span>
+        </button>
       </div>
     </div>
     <div
@@ -19439,6 +19456,7 @@ exports[`renders components/time-picker/demo/size.tsx extend context correctly 1
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -19461,9 +19479,10 @@ exports[`renders components/time-picker/demo/size.tsx extend context correctly 1
             </svg>
           </span>
         </span>
-        <span
+        <button
+          aria-label="Clear"
           class="ant-picker-clear"
-          role="button"
+          type="button"
         >
           <span
             aria-label="close-circle"
@@ -19485,7 +19504,7 @@ exports[`renders components/time-picker/demo/size.tsx extend context correctly 1
               />
             </svg>
           </span>
-        </span>
+        </button>
       </div>
     </div>
     <div
@@ -21024,6 +21043,7 @@ exports[`renders components/time-picker/demo/size.tsx extend context correctly 1
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -21046,9 +21066,10 @@ exports[`renders components/time-picker/demo/size.tsx extend context correctly 1
             </svg>
           </span>
         </span>
-        <span
+        <button
+          aria-label="Clear"
           class="ant-picker-clear"
-          role="button"
+          type="button"
         >
           <span
             aria-label="close-circle"
@@ -21070,7 +21091,7 @@ exports[`renders components/time-picker/demo/size.tsx extend context correctly 1
               />
             </svg>
           </span>
-        </span>
+        </button>
       </div>
     </div>
     <div
@@ -22618,6 +22639,7 @@ exports[`renders components/time-picker/demo/status.tsx extend context correctly
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -24179,6 +24201,7 @@ exports[`renders components/time-picker/demo/status.tsx extend context correctly
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -25742,7 +25765,7 @@ exports[`renders components/time-picker/demo/status.tsx extend context correctly
         class="ant-picker-range-separator"
       >
         <span
-          aria-label="to"
+          aria-hidden="true"
           class="ant-picker-separator"
         >
           <span
@@ -25786,6 +25809,7 @@ exports[`renders components/time-picker/demo/status.tsx extend context correctly
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -27346,7 +27370,7 @@ exports[`renders components/time-picker/demo/status.tsx extend context correctly
         class="ant-picker-range-separator"
       >
         <span
-          aria-label="to"
+          aria-hidden="true"
           class="ant-picker-separator"
         >
           <span
@@ -27390,6 +27414,7 @@ exports[`renders components/time-picker/demo/status.tsx extend context correctly
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -28955,6 +28980,7 @@ exports[`renders components/time-picker/demo/style-class.tsx extend context corr
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -30514,6 +30540,7 @@ exports[`renders components/time-picker/demo/style-class.tsx extend context corr
         style="color: rgb(114, 46, 209);"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -33664,6 +33691,7 @@ exports[`renders components/time-picker/demo/suffix.tsx extend context correctly
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -35250,7 +35278,7 @@ exports[`renders components/time-picker/demo/suffix.tsx extend context correctly
         class="ant-picker-range-separator"
       >
         <span
-          aria-label="to"
+          aria-hidden="true"
           class="ant-picker-separator"
         >
           <span
@@ -35294,6 +35322,7 @@ exports[`renders components/time-picker/demo/suffix.tsx extend context correctly
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -36856,6 +36885,7 @@ Array [
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -38427,6 +38457,7 @@ exports[`renders components/time-picker/demo/variant.tsx extend context correctl
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -39986,7 +40017,7 @@ exports[`renders components/time-picker/demo/variant.tsx extend context correctl
         class="ant-picker-range-separator"
       >
         <span
-          aria-label="to"
+          aria-hidden="true"
           class="ant-picker-separator"
         >
           <span
@@ -40030,6 +40061,7 @@ exports[`renders components/time-picker/demo/variant.tsx extend context correctl
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -41589,6 +41621,7 @@ exports[`renders components/time-picker/demo/variant.tsx extend context correctl
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -43148,7 +43181,7 @@ exports[`renders components/time-picker/demo/variant.tsx extend context correctl
         class="ant-picker-range-separator"
       >
         <span
-          aria-label="to"
+          aria-hidden="true"
           class="ant-picker-separator"
         >
           <span
@@ -43192,6 +43225,7 @@ exports[`renders components/time-picker/demo/variant.tsx extend context correctl
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -44751,6 +44785,7 @@ exports[`renders components/time-picker/demo/variant.tsx extend context correctl
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -46310,7 +46345,7 @@ exports[`renders components/time-picker/demo/variant.tsx extend context correctl
         class="ant-picker-range-separator"
       >
         <span
-          aria-label="to"
+          aria-hidden="true"
           class="ant-picker-separator"
         >
           <span
@@ -46354,6 +46389,7 @@ exports[`renders components/time-picker/demo/variant.tsx extend context correctl
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"
@@ -47913,6 +47949,7 @@ exports[`renders components/time-picker/demo/variant.tsx extend context correctl
           class="ant-picker-suffix"
         >
           <span
+            aria-hidden="true"
             aria-label="clock-circle"
             class="anticon anticon-clock-circle"
             role="img"
@@ -49472,7 +49509,7 @@ exports[`renders components/time-picker/demo/variant.tsx extend context correctl
         class="ant-picker-range-separator"
       >
         <span
-          aria-label="to"
+          aria-hidden="true"
           class="ant-picker-separator"
         >
           <span
@@ -49516,6 +49553,7 @@ exports[`renders components/time-picker/demo/variant.tsx extend context correctl
         class="ant-picker-suffix"
       >
         <span
+          aria-hidden="true"
           aria-label="clock-circle"
           class="anticon anticon-clock-circle"
           role="img"

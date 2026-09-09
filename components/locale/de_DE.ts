@@ -1,4 +1,4 @@
-import Pagination from '@rc-component/pagination/lib/locale/de_DE';
+import Pagination from '@rc-component/pagination/locale/de_DE';
 
 import type { Locale } from '.';
 import Calendar from '../calendar/locale/de_DE';
@@ -16,6 +16,9 @@ const localeValues: Locale = {
   global: {
     placeholder: 'Bitte auswählen',
     close: 'Schließen',
+    show: 'Anzeigen',
+    hide: 'Ausblenden',
+    sortable: 'sortierbar',
   },
   Table: {
     filterTitle: 'Filter-Menü',
@@ -34,6 +37,7 @@ const localeValues: Locale = {
     triggerDesc: 'Klicken zur absteigenden Sortierung',
     triggerAsc: 'Klicken zur aufsteigenden Sortierung',
     cancelSort: 'Klicken zum Abbrechen der Sortierung',
+    selectNone: 'Alle Daten löschen',
   },
   Tour: {
     Next: 'Weiter',
@@ -72,13 +76,22 @@ const localeValues: Locale = {
   Empty: {
     description: 'Keine Daten',
   },
+  Icon: {
+    icon: 'Symbol',
+  },
   Text: {
     edit: 'Bearbeiten',
     copy: 'Kopieren',
     copied: 'Kopiert',
     expand: 'Erweitern',
+    collapse: 'Zusammenbruch',
+  },
+  Carousel: {
+    prevSlide: 'Vorherige Folie',
+    nextSlide: 'Nächste Folie',
   },
   Form: {
+    optional: '(optional)',
     defaultValidateMessages: {
       default: 'Feld-Validierungsfehler: ${label}',
       required: 'Bitte geben Sie ${label} an',
@@ -130,6 +143,13 @@ const localeValues: Locale = {
   QRCode: {
     expired: 'QR-Code abgelaufen',
     refresh: 'Aktualisieren',
+    scanned: 'Gescannt',
+  },
+  ColorPicker: {
+    presetEmpty: 'Leer',
+    transparent: 'Transparent',
+    singleColor: 'Einfarbig',
+    gradientColor: 'Farbverlauf',
   },
 };
 

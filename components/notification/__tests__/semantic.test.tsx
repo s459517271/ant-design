@@ -2,6 +2,10 @@ import React from 'react';
 import { SmileOutlined } from '@ant-design/icons';
 
 import notification, { actWrapper } from '..';
+import {
+  expectSemanticRootStylePriority,
+  semanticRootStylePriority,
+} from '../../../tests/shared/semanticStylePriority';
 import { act, fireEvent, render } from '../../../tests/utils';
 import ConfigProvider from '../../config-provider';
 import { awaitPromise, triggerMotionEnd } from './util';
@@ -168,10 +172,14 @@ describe('notification semantic styles and classNames', () => {
         <ConfigProvider
           notification={{
             classNames: {
+              list: 'config-list-class',
+              listContent: 'config-list-content-class',
               root: 'config-root-class',
               title: 'config-title-class',
             },
             styles: {
+              list: { backgroundColor: 'rgb(1 2 3)' },
+              listContent: { paddingTop: 4 },
               root: { backgroundColor: 'rgb(128 0 128)' },
               title: { color: 'rgb(255 165 0)' },
             },
@@ -188,6 +196,18 @@ describe('notification semantic styles and classNames', () => {
     const { container } = render(<TestComponent />);
 
     fireEvent.click(container.querySelector('button')!);
+
+    const listEl = document.querySelector('.config-list-class');
+    expect(listEl).toBeTruthy();
+    expect(listEl).toHaveStyle({
+      backgroundColor: 'rgb(1 2 3)',
+    });
+
+    const listContentEl = document.querySelector('.config-list-content-class');
+    expect(listContentEl).toBeTruthy();
+    expect(listContentEl).toHaveStyle({
+      paddingTop: '4px',
+    });
 
     const noticeEl = document.querySelector('.ant-notification-notice');
     expect(noticeEl).toBeTruthy();
@@ -376,5 +396,40 @@ describe('notification semantic styles and classNames', () => {
       color: 'rgb(128, 128, 128)', // from config
       margin: '10px', // from props
     });
+  });
+
+  it('should follow notice root style priority', () => {
+    const TestComponent: React.FC = () => {
+      const [api, contextHolder] = notification.useNotification();
+
+      const openNotification = () => {
+        api.open({
+          title: 'Notification Title',
+          duration: 0,
+          styles: semanticRootStylePriority.styles,
+          style: semanticRootStylePriority.style,
+        });
+      };
+
+      return (
+        <ConfigProvider
+          notification={{
+            styles: semanticRootStylePriority.contextStyles,
+            style: semanticRootStylePriority.contextStyle,
+          }}
+        >
+          {contextHolder}
+          <button type="button" onClick={openNotification}>
+            open
+          </button>
+        </ConfigProvider>
+      );
+    };
+
+    const { container } = render(<TestComponent />);
+
+    fireEvent.click(container.querySelector('button')!);
+
+    expectSemanticRootStylePriority(document.querySelector('.ant-notification-notice'));
   });
 });

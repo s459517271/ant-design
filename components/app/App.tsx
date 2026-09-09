@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { clsx } from 'clsx';
 
 import type { AnyObject, CustomComponent } from '../_util/type';
-import { devUseWarning } from '../_util/warning';
+import { useDevWarning } from '../_util/warning';
 import { useComponentConfig } from '../config-provider/context';
 import useMessage from '../message/useMessage';
 import useModal from '../modal/useModal';
@@ -21,7 +21,7 @@ export interface AppProps<P = AnyObject> extends AppConfig {
   component?: CustomComponent<P> | false;
 }
 
-const App: React.FC<AppProps> = (props) => {
+const App = React.forwardRef<HTMLElement, AppProps>((props, ref) => {
   const {
     prefixCls: customizePrefixCls,
     children,
@@ -58,6 +58,7 @@ const App: React.FC<AppProps> = (props) => {
   );
 
   const [messageApi, messageContextHolder] = useMessage(mergedAppConfig.message);
+
   const [notificationApi, notificationContextHolder] = useNotification(
     mergedAppConfig.notification,
   );
@@ -72,11 +73,24 @@ const App: React.FC<AppProps> = (props) => {
     [messageApi, notificationApi, ModalApi],
   );
 
+  const devWarning = useDevWarning('App');
+
+  const hasRootProps = Boolean(
+    className || rootClassName || style || contextClassName || contextStyle,
+  );
+
   // https://github.com/ant-design/ant-design/issues/48802#issuecomment-2097813526
-  devUseWarning('App')(
-    !(cssVarCls && component === false),
+  // https://github.com/ant-design/ant-design/issues/58876
+  devWarning(
+    !(cssVarCls && component === false && hasRootProps),
     'usage',
     'When using cssVar, ensure `component` is assigned a valid React component string.',
+  );
+
+  devWarning(
+    !ref || component !== false,
+    'usage',
+    '`ref` is not supported when `component` is `false`. Please provide a valid `component` instead.',
   );
 
   // ============================ Render ============================
@@ -90,7 +104,7 @@ const App: React.FC<AppProps> = (props) => {
   return (
     <AppContext.Provider value={memoizedContextValue}>
       <AppConfigContext.Provider value={mergedAppConfig}>
-        <Component {...(component === false ? undefined : rootProps)}>
+        <Component {...(component === false ? undefined : { ...rootProps, ref })}>
           {ModalContextHolder}
           {messageContextHolder}
           {notificationContextHolder}
@@ -99,7 +113,7 @@ const App: React.FC<AppProps> = (props) => {
       </AppConfigContext.Provider>
     </AppContext.Provider>
   );
-};
+});
 
 if (process.env.NODE_ENV !== 'production') {
   App.displayName = 'App';

@@ -826,7 +826,6 @@ Array [
                             >
                               <div
                                 class="ant-select-placeholder"
-                                style="visibility: visible;"
                               >
                                 Please select an owner
                               </div>
@@ -835,12 +834,12 @@ Array [
                                 aria-expanded="false"
                                 aria-haspopup="listbox"
                                 aria-required="true"
-                                autocomplete="off"
+                                autocomplete="new-password"
                                 class="ant-select-input"
                                 id="owner"
                                 readonly=""
                                 role="combobox"
-                                type="search"
+                                type="text"
                                 value=""
                               />
                             </div>
@@ -896,16 +895,16 @@ Array [
                                 </div>
                               </div>
                               <div
-                                class="rc-virtual-list"
+                                class="ant-select-dropdown-list"
                                 style="position: relative;"
                               >
                                 <div
-                                  class="rc-virtual-list-holder"
+                                  class="ant-select-dropdown-list-holder"
                                   style="max-height: 256px; overflow-y: auto; overflow-anchor: none;"
                                 >
                                   <div>
                                     <div
-                                      class="rc-virtual-list-holder-inner"
+                                      class="ant-select-dropdown-list-holder-inner"
                                       style="display: flex; flex-direction: column;"
                                     >
                                       <div
@@ -992,7 +991,6 @@ Array [
                             >
                               <div
                                 class="ant-select-placeholder"
-                                style="visibility: visible;"
                               >
                                 Please choose the type
                               </div>
@@ -1001,12 +999,12 @@ Array [
                                 aria-expanded="false"
                                 aria-haspopup="listbox"
                                 aria-required="true"
-                                autocomplete="off"
+                                autocomplete="new-password"
                                 class="ant-select-input"
                                 id="type"
                                 readonly=""
                                 role="combobox"
-                                type="search"
+                                type="text"
                                 value=""
                               />
                             </div>
@@ -1062,16 +1060,16 @@ Array [
                                 </div>
                               </div>
                               <div
-                                class="rc-virtual-list"
+                                class="ant-select-dropdown-list"
                                 style="position: relative;"
                               >
                                 <div
-                                  class="rc-virtual-list-holder"
+                                  class="ant-select-dropdown-list-holder"
                                   style="max-height: 256px; overflow-y: auto; overflow-anchor: none;"
                                 >
                                   <div>
                                     <div
-                                      class="rc-virtual-list-holder-inner"
+                                      class="ant-select-dropdown-list-holder-inner"
                                       style="display: flex; flex-direction: column;"
                                     >
                                       <div
@@ -1163,7 +1161,6 @@ Array [
                             >
                               <div
                                 class="ant-select-placeholder"
-                                style="visibility: visible;"
                               >
                                 Please choose the approver
                               </div>
@@ -1172,12 +1169,12 @@ Array [
                                 aria-expanded="false"
                                 aria-haspopup="listbox"
                                 aria-required="true"
-                                autocomplete="off"
+                                autocomplete="new-password"
                                 class="ant-select-input"
                                 id="approver"
                                 readonly=""
                                 role="combobox"
-                                type="search"
+                                type="text"
                                 value=""
                               />
                             </div>
@@ -1233,16 +1230,16 @@ Array [
                                 </div>
                               </div>
                               <div
-                                class="rc-virtual-list"
+                                class="ant-select-dropdown-list"
                                 style="position: relative;"
                               >
                                 <div
-                                  class="rc-virtual-list-holder"
+                                  class="ant-select-dropdown-list-holder"
                                   style="max-height: 256px; overflow-y: auto; overflow-anchor: none;"
                                 >
                                   <div>
                                     <div
-                                      class="rc-virtual-list-holder-inner"
+                                      class="ant-select-dropdown-list-holder-inner"
                                       style="display: flex; flex-direction: column;"
                                     >
                                       <div
@@ -1343,7 +1340,7 @@ Array [
                               class="ant-picker-range-separator"
                             >
                               <span
-                                aria-label="to"
+                                aria-hidden="true"
                                 class="ant-picker-separator"
                               >
                                 <span
@@ -1388,6 +1385,7 @@ Array [
                               class="ant-picker-suffix"
                             >
                               <span
+                                aria-hidden="true"
                                 aria-label="calendar"
                                 class="anticon anticon-calendar"
                                 role="img"
@@ -1442,7 +1440,7 @@ Array [
                                             class="ant-picker-header"
                                           >
                                             <button
-                                              aria-label="Last year (Control + left)"
+                                              aria-label="Last year"
                                               class="ant-picker-header-super-prev-btn"
                                               tabindex="-1"
                                               type="button"
@@ -1452,7 +1450,7 @@ Array [
                                               />
                                             </button>
                                             <button
-                                              aria-label="Previous month (PageUp)"
+                                              aria-label="Previous month"
                                               class="ant-picker-header-prev-btn"
                                               tabindex="-1"
                                               type="button"
@@ -1482,7 +1480,7 @@ Array [
                                               </button>
                                             </div>
                                             <button
-                                              aria-label="Next month (PageDown)"
+                                              aria-label="Next month"
                                               class="ant-picker-header-next-btn"
                                               style="visibility: hidden;"
                                               tabindex="-1"
@@ -1493,7 +1491,7 @@ Array [
                                               />
                                             </button>
                                             <button
-                                              aria-label="Next year (Control + right)"
+                                              aria-label="Next year"
                                               class="ant-picker-header-super-next-btn"
                                               style="visibility: hidden;"
                                               tabindex="-1"
@@ -1984,7 +1982,7 @@ Array [
                                             class="ant-picker-header"
                                           >
                                             <button
-                                              aria-label="Last year (Control + left)"
+                                              aria-label="Last year"
                                               class="ant-picker-header-super-prev-btn"
                                               style="visibility: hidden;"
                                               tabindex="-1"
@@ -1995,7 +1993,7 @@ Array [
                                               />
                                             </button>
                                             <button
-                                              aria-label="Previous month (PageUp)"
+                                              aria-label="Previous month"
                                               class="ant-picker-header-prev-btn"
                                               style="visibility: hidden;"
                                               tabindex="-1"
@@ -2026,7 +2024,7 @@ Array [
                                               </button>
                                             </div>
                                             <button
-                                              aria-label="Next month (PageDown)"
+                                              aria-label="Next month"
                                               class="ant-picker-header-next-btn"
                                               tabindex="-1"
                                               type="button"
@@ -2036,7 +2034,7 @@ Array [
                                               />
                                             </button>
                                             <button
-                                              aria-label="Next year (Control + right)"
+                                              aria-label="Next year"
                                               class="ant-picker-header-super-next-btn"
                                               tabindex="-1"
                                               type="button"
@@ -4204,7 +4202,7 @@ exports[`renders components/drawer/demo/style-class.tsx extend context correctly
     </span>
   </button>
   <div
-    class="ant-drawer ant-drawer-right css-var-test-id ant-drawer-open ant-drawer-inline"
+    class="ant-drawer ant-drawer-right css-var-test-id acss-1fo211e ant-drawer-open ant-drawer-inline"
     tabindex="-1"
   >
     <div
@@ -4304,7 +4302,7 @@ exports[`renders components/drawer/demo/style-class.tsx extend context correctly
     </div>
   </div>
   <div
-    class="ant-drawer ant-drawer-right css-var-test-id ant-drawer-open ant-drawer-inline"
+    class="ant-drawer ant-drawer-right css-var-test-id acss-1fo211e ant-drawer-open ant-drawer-inline"
     tabindex="-1"
   >
     <div
@@ -4568,13 +4566,13 @@ Array [
           class="ant-drawer-body"
         >
           <p
-            class="site-description-item-profile-p"
+            class="acss-7rm6pl"
             style="margin-bottom: 24px;"
           >
             User Profile
           </p>
           <p
-            class="site-description-item-profile-p"
+            class="acss-7rm6pl"
           >
             Personal
           </p>
@@ -4585,10 +4583,10 @@ Array [
               class="ant-col ant-col-12 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Full Name:
                 </p>
@@ -4599,10 +4597,10 @@ Array [
               class="ant-col ant-col-12 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Account:
                 </p>
@@ -4617,10 +4615,10 @@ Array [
               class="ant-col ant-col-12 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   City:
                 </p>
@@ -4631,10 +4629,10 @@ Array [
               class="ant-col ant-col-12 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Country:
                 </p>
@@ -4649,10 +4647,10 @@ Array [
               class="ant-col ant-col-12 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Birthday:
                 </p>
@@ -4663,10 +4661,10 @@ Array [
               class="ant-col ant-col-12 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Website:
                 </p>
@@ -4681,10 +4679,10 @@ Array [
               class="ant-col ant-col-24 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Message:
                 </p>
@@ -4697,7 +4695,7 @@ Array [
             role="separator"
           />
           <p
-            class="site-description-item-profile-p"
+            class="acss-7rm6pl"
           >
             Company
           </p>
@@ -4708,10 +4706,10 @@ Array [
               class="ant-col ant-col-12 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Position:
                 </p>
@@ -4722,10 +4720,10 @@ Array [
               class="ant-col ant-col-12 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Responsibilities:
                 </p>
@@ -4740,10 +4738,10 @@ Array [
               class="ant-col ant-col-12 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Department:
                 </p>
@@ -4754,10 +4752,10 @@ Array [
               class="ant-col ant-col-12 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Supervisor:
                 </p>
@@ -4774,10 +4772,10 @@ Array [
               class="ant-col ant-col-24 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Skills:
                 </p>
@@ -4790,7 +4788,7 @@ Array [
             role="separator"
           />
           <p
-            class="site-description-item-profile-p"
+            class="acss-7rm6pl"
           >
             Contacts
           </p>
@@ -4801,10 +4799,10 @@ Array [
               class="ant-col ant-col-12 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Email:
                 </p>
@@ -4815,10 +4813,10 @@ Array [
               class="ant-col ant-col-12 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
                   Phone Number:
                 </p>
@@ -4833,19 +4831,19 @@ Array [
               class="ant-col ant-col-24 css-var-test-id"
             >
               <div
-                class="site-description-item-profile-wrapper"
+                class="acss-1jzc83s"
               >
                 <p
-                  class="site-description-item-profile-p-label"
+                  class="acss-1xur4ze"
                 >
-                  Github:
+                  GitHub:
                 </p>
                 <a
-                  href="http://github.com/ant-design/ant-design/"
-                  rel="noreferrer"
+                  href="https://github.com/ant-design/ant-design"
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
-                  github.com/ant-design/ant-design/
+                  github.com/ant-design/ant-design
                 </a>
               </div>
             </div>
@@ -4859,6 +4857,6 @@ Array [
 
 exports[`renders components/drawer/demo/user-profile.tsx extend context correctly 2`] = `
 [
-  "Warning: [antd: List] The \`List\` component is deprecated. And will be removed in next major version.",
+  "Warning: [antd: List] The \`List\` component is deprecated and will be removed in the next major version. If you're using version 6.6.0 or later, please use \`Listy\` instead.",
 ]
 `;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Flex, Tabs } from 'antd';
-import type { TabsProps } from 'antd';
+import type { GetProp, TabsProps } from 'antd';
 import { createStaticStyles } from 'antd-style';
 
 const classNames = createStaticStyles(({ css }) => ({
@@ -17,15 +17,16 @@ const stylesObject: TabsProps['styles'] = {
   header: { backgroundColor: 'rgba(245,245,245,0.5)' },
   item: { fontWeight: 'bold', color: '#1890ff', padding: `6px 10px` },
   indicator: { backgroundColor: 'rgba(255,77,79, 0.3)', height: 4 },
-  content: { backgroundColor: 'rgba(230,247,255,0.8)', padding: 16 },
+  body: { backgroundColor: 'rgba(230,247,255,0.8)' },
+  content: { padding: 16 },
 };
 
-const stylesFn: TabsProps['styles'] = (info) => {
+const stylesFn: TabsProps['styles'] = (info): GetProp<TabsProps, 'styles', 'Return'> => {
   if (info.props.type === 'card') {
     return {
       root: { backgroundColor: 'rgba(250,250,250, 0.8)', borderColor: '#d9d9d9' },
       header: { textAlign: 'start' },
-    } satisfies TabsProps['styles'];
+    };
   }
   return {};
 };

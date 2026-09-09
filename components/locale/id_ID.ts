@@ -1,4 +1,4 @@
-import Pagination from '@rc-component/pagination/lib/locale/id_ID';
+import Pagination from '@rc-component/pagination/locale/id_ID';
 
 import type { Locale } from '.';
 import Calendar from '../calendar/locale/id_ID';
@@ -16,6 +16,9 @@ const localeValues: Locale = {
   global: {
     placeholder: 'Silahkan pilih',
     close: 'Tutup',
+    show: 'Tampilkan',
+    hide: 'Sembunyikan',
+    sortable: 'dapat diurutkan',
   },
   Table: {
     filterTitle: 'Menu filter',
@@ -82,6 +85,10 @@ const localeValues: Locale = {
     copied: 'Disalin',
     expand: 'Perluas',
     collapse: 'Perkecil',
+  },
+  Carousel: {
+    prevSlide: 'Slide sebelumnya',
+    nextSlide: 'Slide berikutnya',
   },
   Form: {
     optional: '(optional)',
